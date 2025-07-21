@@ -40,7 +40,6 @@ export default function LeaderboardScreen() {
         <Text style={styles.header}>Leaderboard</Text>
 
         <View style={styles.streakAndStatsRow}>
-
           <View style={styles.streakCard}>
             <View style={styles.rowCenter}>
               <Ionicons name="flame" size={32} color="#f97316" />
@@ -72,7 +71,6 @@ export default function LeaderboardScreen() {
             </Text>
           </View>
 
-       
           <View style={styles.statsColumn}>
             <View style={styles.statsCard}>
               <Text style={styles.statsNumber}>10</Text>
@@ -97,7 +95,6 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        
         <View style={styles.listCard}>
           <Text style={styles.sectionTitle}>Badge Collectors</Text>
           {badgeCollectors.map((user) => (
@@ -121,9 +118,9 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-       
+        <View style={styles.tipBubble}>
           <Text style={styles.tipLabel}>Motivation Tip:</Text>
-          <Text style={styles.tipText}>“pibble pibble pibble”</Text>
+          <Text style={styles.tipText}>"pibble likes to be a good digital citizen"</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -136,151 +133,205 @@ const styles = StyleSheet.create({
     backgroundColor: '#fef9c3',
   },
   container: {
-    padding: 20,
+    padding: 24,
+    paddingBottom: 40,
   },
   header: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: '900',
-    marginBottom: 20,
+    marginBottom: 32,
     color: '#1f2937',
+    textAlign: 'center',
+    letterSpacing: -1,
   },
   streakAndStatsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 32,
+    gap: 16,
   },
   streakCard: {
     backgroundColor: '#1f2937',
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: 24,
+    padding: 24,
     flex: 1,
-    marginRight: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
   },
   statsColumn: {
     justifyContent: 'space-between',
-    width: 120,
+    width: 130,
+    gap: 16,
   },
   rowCenter: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 12,
   },
   streakText: {
-    fontSize: 32,
+    fontSize: 36,
     color: 'white',
-    marginLeft: 10,
-    fontWeight: 'bold',
+    marginLeft: 12,
+    fontWeight: '900',
   },
   streakLabel: {
     color: '#fb923c',
     textAlign: 'center',
-    marginBottom: 10,
-    fontWeight: '600',
+    marginBottom: 16,
+    fontWeight: '700',
+    fontSize: 16,
   },
   weekRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 12,
+    marginBottom: 16,
+    paddingHorizontal: 8,
   },
   dayColumn: {
     alignItems: 'center',
+    gap: 6,
   },
   dayText: {
     color: '#d1d5db',
-    fontSize: 12,
-    marginBottom: 4,
+    fontSize: 13,
+    fontWeight: '600',
   },
   dayCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#4b5563',
     justifyContent: 'center',
     alignItems: 'center',
   },
   dayCompleted: {
     backgroundColor: '#f97316',
+    shadowColor: '#f97316',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   check: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   streakTip: {
     textAlign: 'center',
     color: '#e5e7eb',
-    fontSize: 12,
+    fontSize: 13,
+    lineHeight: 18,
+    paddingHorizontal: 8,
   },
   streakHighlight: {
     color: '#fb923c',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   statsCard: {
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   statsNumber: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '900',
     color: '#1f2937',
+    marginBottom: 4,
   },
   statsLabel: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#4b5563',
+    fontWeight: '600',
   },
   listCard: {
     backgroundColor: '#fde68a',
     borderColor: '#facc15',
     borderWidth: 3,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
+    borderRadius: 20,
+    padding: 24,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
     textAlign: 'center',
     color: '#1f2937',
-    marginBottom: 10,
+    marginBottom: 20,
+    letterSpacing: -0.5,
   },
   listItem: {
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   listText: {
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1f2937',
+    fontSize: 16,
+    flex: 1,
   },
   listScore: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '900',
     color: '#dc2626',
+    marginLeft: 12,
   },
   tipBubble: {
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 20,
+    padding: 24,
     alignItems: 'center',
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
   },
   tipLabel: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#6b7280',
-    marginBottom: 4,
+    marginBottom: 8,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   tipText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
     color: '#1f2937',
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });
