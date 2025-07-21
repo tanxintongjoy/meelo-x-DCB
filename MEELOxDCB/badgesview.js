@@ -4,18 +4,18 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 
 const badgesData = [
-  { id: 1, title: 'DCB Badge!', earned: true },
+  { id: 1, title: 'dcb badge!', earned: true },
   { id: 2, title: '???', earned: false },
-  { id: 3, title: 'No phone for a day', earned: true },
-  { id: 4, title: 'Complete 50 goals', earned: true },
+  { id: 3, title: 'no phone for a day', earned: true },
+  { id: 4, title: 'complete 50 goals', earned: true },
   { id: 5, title: '???', earned: false },
-  { id: 6, title: 'First on leaderboard', earned: true },
+  { id: 6, title: 'first on leaderboard', earned: true },
 ];
 
 export default function BadgesScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Badges</Text>
+      <Text style={styles.title}>badges</Text>
       <View style={styles.grid}>
         {badgesData.map((badge) => (
           <View

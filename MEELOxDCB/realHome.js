@@ -118,12 +118,11 @@ const HomeScreen = () => {
 
  
   const [badges, setBadges] = useState([
-    { name: 'DCB Champion', earned: true, icon: '🏆', description: 'Complete DCB Challenge', color: '#FF6B6B' },
-    { name: '1st Place', earned: true, icon: '🥇', description: 'Rank #1 in leaderboard', color: '#FFD700' },
-    { name: '50 Goals', earned: false, icon: '✅', description: 'Hit 50 daily goals', color: '#4CAF50' },
-    { name: '2hr Streak', earned: false, icon: '⏰', description: 'Stay under 2hr daily limit', color: '#2196F3' },
-    { name: '10 Day Fire', earned: false, icon: '🔥', description: '10 day streak maintaining goals', color: '#FF5722' },
-    { name: 'Focus Master', earned: false, icon: '🎯', description: 'Complete focus challenges', color: '#9C27B0' },
+    { name: 'first app', earned: true, icon: '📱', description: 'add your first tracked app', color: '#9C27B0' },
+    { name: '7 day streak', earned: true, icon: '🔥', description: '7 consecutive days of goals', color: '#FF5722' },
+    { name: '50 goals', earned: false, icon: '✅', description: 'hit 50 daily goals', color: '#4CAF50' },
+    { name: '2hr streak', earned: false, icon: '⏰', description: 'stay under 2hr daily limit', color: '#2196F3' },
+    { name: '10 day fire', earned: false, icon: '🔥', description: '10 day streak maintaining goals', color: '#FF5722' },
   ]);
 
   
@@ -140,9 +139,9 @@ const HomeScreen = () => {
       if (Device.platformOS === 'android') {
         
         Alert.alert(
-          'Development Mode',
-          'Real app scanning requires a production build. Using demo data for now.',
-          [{ text: 'OK' }]
+          'development mode',
+          'real app scanning requires a production build. using demo data for now.',
+          [{ text: 'ok' }]
         );
         
         
@@ -157,18 +156,18 @@ const HomeScreen = () => {
         return demoApps;
       } else {
         Alert.alert(
-          'Platform Not Supported',
-          'Real app scanning is only available on Android devices in production builds.',
-          [{ text: 'OK' }]
+          'platform not supported',
+          'real app scanning is only available on android devices in production builds.',
+          [{ text: 'ok' }]
         );
         return [];
       }
     } catch (error) {
       console.error('Error scanning apps:', error);
       Alert.alert(
-        'App Scanning Error',
-        'Unable to scan installed apps. Using demo data for development.',
-        [{ text: 'OK' }]
+        'app scanning error',
+        'unable to scan installed apps. using demo data for development.',
+        [{ text: 'ok' }]
       );
       
    
@@ -230,7 +229,7 @@ const HomeScreen = () => {
     } catch (error) {
       console.error('Error getting installed apps:', error);
       setIsScanning(false);
-      Alert.alert('Scan Error', 'Could not complete real-time app scan');
+      Alert.alert('scan error', 'could not complete real-time app scan');
     }
   };
 
@@ -245,14 +244,14 @@ const HomeScreen = () => {
   const handleAddApp = () => {
 
     if (!newAppName.trim()) {
-      Alert.alert('Error', 'Please enter an app name');
+      Alert.alert('error', 'please enter an app name');
       return;
     }
 
   
     const goalMinutes = parseInt(newAppGoal);
     if (isNaN(goalMinutes) || goalMinutes <= 0) {
-      Alert.alert('Error', 'Please enter a valid goal time in minutes');
+      Alert.alert('error', 'please enter a valid goal time in minutes');
       return;
     }
 
@@ -275,7 +274,7 @@ const HomeScreen = () => {
     setShowAddAppModal(false);
     setShowInstalledApps(false);
     
-    Alert.alert('Success', `${newAppName} has been added with a ${goalMinutes} minute daily goal!`);
+    Alert.alert('success', `${newAppName} has been added with a ${goalMinutes} minute daily goal!`);
   };
 
   
@@ -328,7 +327,7 @@ const HomeScreen = () => {
           </View>
         </View>
         {isOverGoal && (
-          <Text style={styles.overGoalStatus}>Goal exceeded!</Text>
+          <Text style={styles.overGoalStatus}>goal exceeded!</Text>
         )}
       </View>
     );
@@ -341,13 +340,13 @@ const HomeScreen = () => {
         Alert.alert(
           `🏆 ${badge.name}`,
           badge.description,
-          [{ text: 'Awesome!' }]
+          [{ text: 'awesome!' }]
         );
       } else {
         Alert.alert(
-          '🔒 Badge Locked',
-          `Complete: ${badge.description}`,
-          [{ text: 'Got it!' }]
+          '🔒 badge locked',
+          `complete: ${badge.description}`,
+          [{ text: 'got it!' }]
         );
       }
     };
@@ -424,7 +423,7 @@ const HomeScreen = () => {
     
         <View style={styles.mainCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Home</Text>
+            <Text style={styles.cardTitle}>home</Text>
             <View style={styles.dateContainer}>
               <Text style={styles.dateText}>{getCurrentDate()}</Text>
               <TouchableOpacity 
@@ -438,9 +437,9 @@ const HomeScreen = () => {
 
 
           <View style={styles.summarySection}>
-            <Text style={styles.summaryTitle}>Daily summaries:</Text>
+            <Text style={styles.summaryTitle}>daily summaries:</Text>
             <Text style={styles.goalsText}>
-              You've hit {goalsHit}/{totalGoals} goals today!
+              you've hit {goalsHit}/{totalGoals} goals today!
             </Text>
           </View>
 
@@ -454,7 +453,7 @@ const HomeScreen = () => {
 
         <View style={styles.badgesSection}>
           <View style={styles.badgesHeader}>
-            <Text style={styles.badgesTitle}>🏆 Badges</Text>
+            <Text style={styles.badgesTitle}>🏆 badges</Text>
             <View style={styles.badgeStats}>
               <Text style={styles.badgeStatsText}>
                 {badges.filter(b => b.earned).length}/{badges.length} earned
@@ -479,7 +478,7 @@ const HomeScreen = () => {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Add New App</Text>
+                <Text style={styles.modalTitle}>add new app</Text>
                 <TouchableOpacity 
                   onPress={() => setShowAddAppModal(false)}
                   style={styles.closeButton}
@@ -488,13 +487,13 @@ const HomeScreen = () => {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.inputLabel}>App Name</Text>
+              <Text style={styles.inputLabel}>app name</Text>
               <View style={styles.inputRow}>
                 <TextInput
                   style={[styles.textInput, { flex: 1 }]}
                   value={newAppName}
                   onChangeText={setNewAppName}
-                  placeholder="Select an app from scan results"
+                  placeholder="select an app from scan results"
                   placeholderTextColor="#999"
                   editable={false}
                 />
@@ -514,7 +513,7 @@ const HomeScreen = () => {
                     style={{ marginRight: 5 }} 
                   />
                   <Text style={styles.browseAppsText}>
-                    {isScanning ? 'Scanning...' : 'Scan Device'}
+                    {isScanning ? 'scanning...' : 'scan device'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -522,11 +521,11 @@ const HomeScreen = () => {
               {showInstalledApps && (
                 <View style={styles.installedAppsContainer}>
                   <View style={styles.installedAppsHeader}>
-                    <Text style={styles.installedAppsTitle}>📱 Detected Apps:</Text>
+                    <Text style={styles.installedAppsTitle}>📱 detected apps:</Text>
                   </View>
                   <Text style={styles.detectionInfo}>
-                    {isScanning ? '🔄 Scanning device...' : 
-                     `Device scan complete • ${installedApps.length} apps found${lastScanTime ? ` • Scanned: ${lastScanTime.toLocaleTimeString()}` : ''}`}
+                    {isScanning ? '🔄 scanning device...' : 
+                     `device scan complete • ${installedApps.length} apps found${lastScanTime ? ` • scanned: ${lastScanTime.toLocaleTimeString()}` : ''}`}
                   </Text>
                   <ScrollView style={styles.installedAppsList} showsVerticalScrollIndicator={false}>
                     {renderInstalledAppsList()}
@@ -534,17 +533,17 @@ const HomeScreen = () => {
                 </View>
               )}
 
-              <Text style={styles.inputLabel}>Daily Goal (minutes)</Text>
+              <Text style={styles.inputLabel}>daily goal (minutes)</Text>
               <TextInput
                 style={styles.textInput}
                 value={newAppGoal}
                 onChangeText={setNewAppGoal}
-                placeholder="Enter daily goal in minutes"
+                placeholder="enter daily goal in minutes"
                 placeholderTextColor="#999"
                 keyboardType="numeric"
               />
 
-              <Text style={styles.inputLabel}>Choose Icon</Text>
+              <Text style={styles.inputLabel}>choose icon</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.iconSelector}>
                 {availableIcons.map((icon, index) => (
                   <TouchableOpacity
@@ -560,7 +559,7 @@ const HomeScreen = () => {
                 ))}
               </ScrollView>
 
-              <Text style={styles.inputLabel}>Choose Color</Text>
+              <Text style={styles.inputLabel}>choose color</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorSelector}>
                 {availableColors.map((color, index) => (
                   <TouchableOpacity
@@ -576,7 +575,7 @@ const HomeScreen = () => {
               </ScrollView>
 
               <TouchableOpacity style={styles.addAppButton} onPress={handleAddApp}>
-                <Text style={styles.addAppButtonText}>Add App</Text>
+                <Text style={styles.addAppButtonText}>add app</Text>
               </TouchableOpacity>
             </View>
           </View>

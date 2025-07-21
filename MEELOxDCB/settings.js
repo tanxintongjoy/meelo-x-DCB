@@ -20,22 +20,22 @@ const scale = (size) => (screenWidth / 375) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
 const SettingsScreen = () => {
-  const [reminderInterval, setReminderInterval] = useState('Every 15 mins');
+  const [reminderInterval, setReminderInterval] = useState('every 15 mins');
   const [pomodoroBreaks, setPomodoroBreaks] = useState(true);
   const [motivationalTips, setMotivationalTips] = useState(true);
-  const [privacyLevel, setPrivacyLevel] = useState('Show');
+  const [privacyLevel, setPrivacyLevel] = useState('show');
   const [showNicknameOnly, setShowNicknameOnly] = useState(false);
 
   const reminderOptions = [
-    'Every 5 mins',
-    'Every 10 mins',
-    'Every 15 mins',
-    'Every 30 mins',
-    'Every hour',
-    'Never',
+    'every 5 mins',
+    'every 10 mins',
+    'every 15 mins',
+    'every 30 mins',
+    'every hour',
+    'never',
   ];
 
-  const privacyOptions = ['Show', 'Hide', 'Friends only'];
+  const privacyOptions = ['show', 'hide', 'friends only'];
 
   const cycleReminder = () => {
     const currentIndex = reminderOptions.indexOf(reminderInterval);
@@ -53,18 +53,18 @@ const SettingsScreen = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.header}>Personal Settings</Text>
+        <Text style={styles.header}>personal settings</Text>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
+          <Text style={styles.sectionTitle}>notifications</Text>
 
           <View style={styles.card}>
 
 //reminders
             <View style={styles.itemRow}>
               <View>
-                <Text style={styles.itemTitle}>Reminders:</Text>
-                <Text style={styles.itemSubtitle}>How often do you want to be reminded?</Text>
+                <Text style={styles.itemTitle}>reminders:</Text>
+                <Text style={styles.itemSubtitle}>how often do you want to be reminded?</Text>
               </View>
               <TouchableOpacity onPress={cycleReminder} style={styles.selectButton}>
                 <Text style={styles.selectButtonText}>{reminderInterval}</Text>
@@ -74,11 +74,11 @@ const SettingsScreen = () => {
 //pomodoro style breaks
             <View style={styles.itemRow}>
               <View>
-                <Text style={styles.itemTitle}>Pomodoro style breaks:</Text>
+                <Text style={styles.itemTitle}>pomodoro style breaks:</Text>
                 <Text style={styles.itemSubtitle}>(25 work : 5 min rest)</Text>
               </View>
               <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{pomodoroBreaks ? 'Yes' : 'No'}</Text>
+                <Text style={styles.statusLabel}>{pomodoroBreaks ? 'yes' : 'no'}</Text>
                 <Switch
                   value={pomodoroBreaks}
                   onValueChange={setPomodoroBreaks}
@@ -90,9 +90,9 @@ const SettingsScreen = () => {
 
 //motivational tips - pibble pibble pibble
             <View style={styles.itemRow}>
-              <Text style={styles.itemTitle}>Motivational tips:</Text>
+              <Text style={styles.itemTitle}>motivational tips:</Text>
               <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{motivationalTips ? 'Yes' : 'No'}</Text>
+                <Text style={styles.statusLabel}>{motivationalTips ? 'yes' : 'no'}</Text>
                 <Switch
                   value={motivationalTips}
                   onValueChange={setMotivationalTips}
@@ -105,12 +105,12 @@ const SettingsScreen = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Privacy</Text>
+          <Text style={styles.sectionTitle}>privacy</Text>
 
           <View style={styles.card}>
     // privacy
             <View style={styles.itemRow}>
-              <Text style={styles.itemTitle}>Profile Visibility:</Text>
+              <Text style={styles.itemTitle}>profile visibility:</Text>
               <TouchableOpacity onPress={cyclePrivacy} style={styles.selectButtonSmall}>
                 <Text style={styles.selectButtonText}>{privacyLevel}</Text>
               </TouchableOpacity>
@@ -118,9 +118,9 @@ const SettingsScreen = () => {
 
    //nickname
             <View style={[styles.itemRow, styles.nicknameRow]}>
-              <Text style={styles.itemTitle}>Only show Nickname</Text>
+              <Text style={styles.itemTitle}>only show nickname</Text>
               <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{showNicknameOnly ? 'On' : 'Off'}</Text>
+                <Text style={styles.statusLabel}>{showNicknameOnly ? 'on' : 'off'}</Text>
                 <Switch
                   value={showNicknameOnly}
                   onValueChange={setShowNicknameOnly}

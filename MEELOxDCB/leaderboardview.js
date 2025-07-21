@@ -51,7 +51,7 @@ export default function LeaderboardScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>Leaderboard</Text>
+        <Text style={styles.header}>leaderboard</Text>
 
         <View style={styles.streakAndStatsRow}>
           <View style={styles.streakCard}>
@@ -64,7 +64,7 @@ export default function LeaderboardScreen() {
             <View style={styles.weekRow}>
               {streakData.weekDays.map((day, index) => (
                 <View key={day} style={styles.dayColumn}>
-                  <Text style={styles.dayText}>{day}</Text>
+                  <Text style={styles.dayText}>{day.toLowerCase()}</Text>
                   <View
                     style={[
                       styles.dayCircle,
@@ -80,7 +80,7 @@ export default function LeaderboardScreen() {
             </View>
 
             <Text style={styles.streakTip}>
-              Great start! Keep your{' '}
+              great start! keep your{' '}
               <Text style={styles.streakHighlight}>perfect streak</Text> going tomorrow.
             </Text>
           </View>
@@ -89,18 +89,18 @@ export default function LeaderboardScreen() {
             <View style={styles.statsCard}>
               <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
                 <Text style={styles.statsNumber}>10</Text>
-                <Text style={styles.statsLabel}>Badges</Text>
+                <Text style={styles.statsLabel}>badges</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.statsCard}>
               <Text style={styles.statsNumber}>127</Text>
-              <Text style={styles.statsLabel}>Points</Text>
+              <Text style={styles.statsLabel}>points</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.listCard}>
-          <Text style={styles.sectionTitle}>Highest SSTreekers</Text>
+          <Text style={styles.sectionTitle}>highest sstrekers</Text>
           {highestSSTreekers.map((user) => (
             <View key={user.rank} style={styles.listItem}>
               <Text style={styles.listText}>
@@ -113,7 +113,7 @@ export default function LeaderboardScreen() {
 
         <View style={styles.listCard}>
           <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
-            <Text style={[styles.sectionTitle, styles.clickableTitle]}>Badge Collectors</Text>
+            <Text style={[styles.sectionTitle, styles.clickableTitle]}>badge collectors</Text>
           </TouchableOpacity>
           {badgeCollectors.map((user) => (
             <View key={user.rank} style={styles.listItem}>
@@ -126,7 +126,7 @@ export default function LeaderboardScreen() {
         </View>
      
         <View style={styles.listCard}>
-          <Text style={styles.sectionTitle}>Digital Wellness Heros!</Text>
+          <Text style={styles.sectionTitle}>digital wellness heros!</Text>
           {digitalWellnessHeros.map((user) => (
             <View key={user.rank} style={styles.listItem}>
               <Text style={styles.listText}>
@@ -137,7 +137,7 @@ export default function LeaderboardScreen() {
         </View>
 
         <View style={styles.tipBubble}>
-          <Text style={styles.tipLabel}>Motivation Tip:</Text>
+          <Text style={styles.tipLabel}>motivation tip:</Text>
           <Text style={styles.tipText}>"pibble likes to be a good digital citizen"</Text>
         </View>
       </ScrollView>

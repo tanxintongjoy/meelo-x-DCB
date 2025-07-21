@@ -119,7 +119,7 @@ const AnnouncementCard = ({ item, index, navigation }) => {
       <View style={styles.cardContent}>
         <Image source={{ uri: imageUrl }} style={styles.cardImage} resizeMode="cover" />
         <View style={styles.cardOverlay}>
-          <Text style={styles.cardTitle}>{item.title || 'Event Title'}</Text>
+          <Text style={styles.cardTitle}>{item.title || 'event title'}</Text>
         </View>
         <View style={styles.cardArrow}>
           <Ionicons name="chevron-forward" size={30} color="#fff" />
@@ -157,7 +157,7 @@ const AnnouncementsScreen = ({ navigation }) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Loading announcements...</Text>
+          <Text style={styles.loadingText}>loading announcements...</Text>
         </View>
       </SafeAreaView>
     );
@@ -211,7 +211,7 @@ const TabNavigator = () => (
         );
       },
       tabBarLabel: ({ focused }) => (
-        <Text style={[styles.tabText, focused && styles.activeTabText]}>{route.name}</Text>
+        <Text style={[styles.tabText, focused && styles.activeTabText]}>{route.name.toLowerCase()}</Text>
       ),
       headerShown: false,
       tabBarStyle: styles.tabBar,
