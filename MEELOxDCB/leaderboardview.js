@@ -23,7 +23,6 @@ const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * fact
 
 const streakData = {
   currentStreak: 121,
-  weekDays: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
   completedDays: [0],
 };
 
@@ -60,24 +59,6 @@ export default function LeaderboardScreen() {
               <Text style={styles.streakText}>{streakData.currentStreak}</Text>
             </View>
             <Text style={styles.streakLabel}>day streak!</Text>
-
-            <View style={styles.weekRow}>
-              {streakData.weekDays.map((day, index) => (
-                <View key={day} style={styles.dayColumn}>
-                  <Text style={styles.dayText}>{day.toLowerCase()}</Text>
-                  <View
-                    style={[
-                      styles.dayCircle,
-                      streakData.completedDays.includes(index) && styles.dayCompleted,
-                    ]}
-                  >
-                    {streakData.completedDays.includes(index) && (
-                      <Text style={styles.check}>✓</Text>
-                    )}
-                  </View>
-                </View>
-              ))}
-            </View>
 
             <Text style={styles.streakTip}>
               great start! keep your{' '}

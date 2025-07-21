@@ -60,18 +60,18 @@ const SettingsScreen = () => {
 
           <View style={styles.card}>
 
-//reminders
+
             <View style={styles.itemRow}>
               <View>
                 <Text style={styles.itemTitle}>reminders:</Text>
-                <Text style={styles.itemSubtitle}>how often do you want to be reminded?</Text>
+                <Text style={styles.itemSubtitle}>How often???</Text>
               </View>
               <TouchableOpacity onPress={cycleReminder} style={styles.selectButton}>
                 <Text style={styles.selectButtonText}>{reminderInterval}</Text>
               </TouchableOpacity>
             </View>
 
-//pomodoro style breaks
+
             <View style={styles.itemRow}>
               <View>
                 <Text style={styles.itemTitle}>pomodoro style breaks:</Text>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontWeight: '700',
     fontSize: moderateScale(16),
-    marginRight: scale(12),
+
     color: '#7b6e61',
   },
   nicknameRow: {
