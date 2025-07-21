@@ -39,9 +39,8 @@ export default function LeaderboardScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>Leaderboard</Text>
 
-        {/* streakstats */}
         <View style={styles.streakAndStatsRow}>
-          {/* streakkkk */}
+
           <View style={styles.streakCard}>
             <View style={styles.rowCenter}>
               <Ionicons name="flame" size={32} color="#f97316" />
@@ -99,7 +98,7 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        {/* badge collectors */}
+        
         <View style={styles.listCard}>
           <Text style={styles.sectionTitle}>Badge Collectors</Text>
           {badgeCollectors.map((user) => (
@@ -111,7 +110,7 @@ export default function LeaderboardScreen() {
             </View>
           ))}
         </View>
-        {/* digital wellness heros */}
+     
         <View style={styles.listCard}>
           <Text style={styles.sectionTitle}>Digital Wellness Heros!</Text>
           {digitalWellnessHeros.map((user) => (
@@ -123,8 +122,7 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        {/* motivational tip - add in if the picker - bool */}
-        <View style={styles.tipBubble}>
+       
           <Text style={styles.tipLabel}>Motivation Tip:</Text>
           <Text style={styles.tipText}>“pibble pibble pibble”</Text>
         </View>
