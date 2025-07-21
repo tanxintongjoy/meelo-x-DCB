@@ -152,7 +152,6 @@ const HomeScreen = () => {
   const getInstalledApps = async () => {
     try {
       setIsScanning(true);
-      setShowInstalledApps(true);
       
 
       const deviceInfo = {
@@ -175,6 +174,7 @@ const HomeScreen = () => {
 
       setInstalledApps(sortedApps);
       setLastScanTime(scanTime);
+      setShowInstalledApps(true);
       setIsScanning(false);
       
     } catch (error) {
@@ -464,7 +464,7 @@ const HomeScreen = () => {
                     style={{ marginRight: 5 }} 
                   />
                   <Text style={styles.browseAppsText}>
-                    {isScanning ? 'Scanning...' : showInstalledApps ? 'Refresh Apps' : 'Scan Device'}
+                    {isScanning ? 'Scanning...' : 'Scan Device'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -473,17 +473,10 @@ const HomeScreen = () => {
                 <View style={styles.installedAppsContainer}>
                   <View style={styles.installedAppsHeader}>
                     <Text style={styles.installedAppsTitle}>📱 Detected Apps:</Text>
-                    <TouchableOpacity 
-                      style={styles.refreshButton}
-                      onPress={getInstalledApps}
-                    >
-                      <Ionicons name="refresh" size={16} color="#4CAF50" />
-                      <Text style={styles.refreshText}>Refresh</Text>
-                    </TouchableOpacity>
                   </View>
                   <Text style={styles.detectionInfo}>
                     {isScanning ? '🔄 Scanning device...' : 
-                     `Real-time detection • ${installedApps.length} apps found${lastScanTime ? ` • Last scan: ${lastScanTime.toLocaleTimeString()}` : ''}`}
+                     `Device scan complete • ${installedApps.length} apps found${lastScanTime ? ` • Scanned: ${lastScanTime.toLocaleTimeString()}` : ''}`}
                   </Text>
                   <ScrollView style={styles.installedAppsList} showsVerticalScrollIndicator={false}>
                     {renderInstalledAppsList()}
