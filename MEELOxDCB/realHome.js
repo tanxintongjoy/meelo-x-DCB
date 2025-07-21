@@ -14,55 +14,198 @@ import {
   FlatList,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Device from 'expo-device';
+
+
+const APP_DATABASE = [
+  { name: 'WhatsApp', packageName: 'com.whatsapp', icon: '💬', category: 'Social' },
+  { name: 'Instagram', packageName: 'com.instagram.android', icon: '📷', category: 'Social' },
+  { name: 'TikTok', packageName: 'com.zhiliaoapp.musically', icon: '🎵', category: 'Entertainment' },
+  { name: 'YouTube', packageName: 'com.google.android.youtube', icon: '📺', category: 'Entertainment' },
+  { name: 'Facebook', packageName: 'com.facebook.katana', icon: '👥', category: 'Social' },
+  { name: 'Spotify', packageName: 'com.spotify.music', icon: '🎵', category: 'Music' },
+  { name: 'Netflix', packageName: 'com.netflix.mediaclient', icon: '🎬', category: 'Entertainment' },
+  { name: 'Gmail', packageName: 'com.google.android.gm', icon: '📧', category: 'Productivity' },
+  { name: 'Maps', packageName: 'com.google.android.apps.maps', icon: '🗺️', category: 'Navigation' },
+  { name: 'Chrome', packageName: 'com.android.chrome', icon: '🌐', category: 'Browser' },
+  { name: 'Discord', packageName: 'com.discord', icon: '💬', category: 'Social' },
+  { name: 'Telegram', packageName: 'org.telegram.messenger', icon: '✈️', category: 'Social' },
+  { name: 'Snapchat', packageName: 'com.snapchat.android', icon: '👻', category: 'Social' },
+  { name: 'Twitter', packageName: 'com.twitter.android', icon: '🐦', category: 'Social' },
+  { name: 'Reddit', packageName: 'com.reddit.frontpage', icon: '📱', category: 'Social' },
+  { name: 'Uber', packageName: 'com.ubercab', icon: '🚗', category: 'Transport' },
+  { name: 'Amazon', packageName: 'com.amazon.mshop.android.shopping', icon: '🛒', category: 'Shopping' },
+  { name: 'Pokemon GO', packageName: 'com.nianticlabs.pokemongo', icon: '🎮', category: 'Games' },
+  { name: 'Clash Royale', packageName: 'com.supercell.clashroyale', icon: '⚔️', category: 'Games' },
+  { name: 'Among Us', packageName: 'com.innersloth.spacemafia', icon: '🎮', category: 'Games' },
+  { name: 'Twitch', packageName: 'tv.twitch.android.app', icon: '📹', category: 'Entertainment' },
+  { name: 'LinkedIn', packageName: 'com.linkedin.android', icon: '💼', category: 'Professional' },
+  { name: 'Microsoft Teams', packageName: 'com.microsoft.teams', icon: '👥', category: 'Work' },
+  { name: 'Zoom', packageName: 'us.zoom.videomeetings', icon: '📹', category: 'Work' },
+  { name: 'Slack', packageName: 'com.slack', icon: '💬', category: 'Work' },
+  { name: 'Venmo', packageName: 'com.venmo', icon: '💰', category: 'Finance' },
+  { name: 'Cash App', packageName: 'com.squareup.cash', icon: '💵', category: 'Finance' },
+  { name: 'Robinhood', packageName: 'com.robinhood.android', icon: '📈', category: 'Finance' },
+  { name: 'DoorDash', packageName: 'com.dd.doordash', icon: '🍔', category: 'Food' },
+  { name: 'Uber Eats', packageName: 'com.ubercab.eats', icon: '🍕', category: 'Food' },
+];
+
+const IOS_APPS = [
+  { name: 'Safari', packageName: 'com.apple.mobilesafari', icon: '🧭', category: 'Browser' },
+  { name: 'Messages', packageName: 'com.apple.MobileSMS', icon: '💬', category: 'Social' },
+  { name: 'FaceTime', packageName: 'com.apple.facetime', icon: '📞', category: 'Communication' },
+  { name: 'Photos', packageName: 'com.apple.mobileslideshow', icon: '📸', category: 'Media' },
+  { name: 'Settings', packageName: 'com.apple.Preferences', icon: '⚙️', category: 'System' },
+  { name: 'Apple Music', packageName: 'com.apple.Music', icon: '🎵', category: 'Music' },
+  { name: 'App Store', packageName: 'com.apple.AppStore', icon: '📱', category: 'Store' },
+];
+
+
+const formatTime = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours > 0) {
+    return `${hours}h ${mins}m`;
+  }
+  return `${mins}m`;
+};
+
+const getCurrentDate = () => {
+  const date = new Date();
+  return date.toLocaleDateString('en-GB', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+};
 
 const HomeScreen = () => {
+
   const [appUsage, setAppUsage] = useState([
-    { id: 1, name: 'TikTok', icon: '🎵', color: '#69C9FF', todayTime: 84, dailyGoal: 60, currentSession: 0, isActive: false },
-    { id: 2, name: 'Instagram', icon: '📷', color: '#FF6B6B', todayTime: 81, dailyGoal: 90, currentSession: 0, isActive: false },
-    { id: 3, name: 'Brawlstars', icon: '🎮', color: '#4ECDC4', todayTime: 48, dailyGoal: 120, currentSession: 0, isActive: false },
-    { id: 4, name: 'Whatsapp', icon: '💬', color: '#25D366', todayTime: 171, dailyGoal: 180, currentSession: 0, isActive: false },
+    { id: 1, name: 'TikTok', icon: '🎵', color: '#69C9FF', todayTime: 84, dailyGoal: 60 },
+    { id: 2, name: 'Instagram', icon: '📷', color: '#FF6B6B', todayTime: 81, dailyGoal: 90 },
+    { id: 3, name: 'Brawlstars', icon: '🎮', color: '#4ECDC4', todayTime: 48, dailyGoal: 120 },
+    { id: 4, name: 'Whatsapp', icon: '💬', color: '#25D366', todayTime: 171, dailyGoal: 180 },
   ]);
   
+
   const [showAddAppModal, setShowAddAppModal] = useState(false);
   const [newAppName, setNewAppName] = useState('');
   const [newAppGoal, setNewAppGoal] = useState('60');
   const [selectedIcon, setSelectedIcon] = useState('📱');
   const [selectedColor, setSelectedColor] = useState('#69C9FF');
-  const [notifications, setNotifications] = useState([]);
+  
+  
+  const [installedApps, setInstalledApps] = useState([]);
+  const [showInstalledApps, setShowInstalledApps] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [lastScanTime, setLastScanTime] = useState(null);
+
 
   const availableIcons = ['📱', '🎵', '📷', '🎮', '💬', '📺', '🛒', '📚', '🏃', '🍔', '🎬', '📧'];
   const availableColors = ['#69C9FF', '#FF6B6B', '#4ECDC4', '#25D366', '#FFD700', '#FF69B4', '#9370DB', '#FF4500'];
 
+ 
   const [badges, setBadges] = useState([
-    { name: 'STAR', earned: true, icon: '⭐' },
-    { name: '???', earned: false, icon: '' },
-    { name: '???', earned: false, icon: '' },
-    { name: '???', earned: false, icon: '' },
+    { name: 'DCB Champion', earned: true, icon: '🏆', description: 'Complete DCB Challenge', color: '#FF6B6B' },
+    { name: '1st Place', earned: true, icon: '🥇', description: 'Rank #1 in leaderboard', color: '#FFD700' },
+    { name: '50 Goals', earned: false, icon: '✅', description: 'Hit 50 daily goals', color: '#4CAF50' },
+    { name: '2hr Streak', earned: false, icon: '⏰', description: 'Stay under 2hr daily limit', color: '#2196F3' },
+    { name: '10 Day Fire', earned: false, icon: '🔥', description: '10 day streak maintaining goals', color: '#FF5722' },
+    { name: 'Focus Master', earned: false, icon: '🎯', description: 'Complete focus challenges', color: '#9C27B0' },
   ]);
 
+  
   const [goalsHit, setGoalsHit] = useState(2);
   const [totalGoals, setTotalGoals] = useState(3);
 
-  const getCurrentDate = () => {
-    const date = new Date();
-    return date.toLocaleDateString('en-GB', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
-    });
+  const getAllApps = () => {
+    const isIOS = Device.osName === 'iOS';
+    return isIOS ? [...APP_DATABASE, ...IOS_APPS] : APP_DATABASE;
   };
 
+  const simulateAppDetection = (allApps) => {
+    return allApps.filter(() => Math.random() > 0.25);
+  };
+
+
+  const processDetectedApps = (detectedApps) => {
+    const now = new Date();
+    
+    const appsWithTimestamp = detectedApps.map(app => ({
+      ...app,
+      lastDetected: now.toLocaleTimeString(),
+      installed: true,
+    }));
+    
+    const sortedApps = appsWithTimestamp.sort((a, b) => {
+      if (a.category !== b.category) {
+        return a.category.localeCompare(b.category);
+      }
+      return a.name.localeCompare(b.name);
+    });
+    
+    return { sortedApps, scanTime: now };
+  };
+
+ 
+  const getInstalledApps = async () => {
+    try {
+      setIsScanning(true);
+      setShowInstalledApps(true);
+      
+
+      const deviceInfo = {
+        brand: Device.brand,
+        modelName: Device.modelName,
+        osName: Device.osName,
+        osVersion: Device.osVersion,
+        platformApiLevel: Device.platformApiLevel,
+      };
+      console.log('Device Info:', deviceInfo);
+      
+      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+
+      const allApps = getAllApps();
+      const detectedApps = simulateAppDetection(allApps);
+      const { sortedApps, scanTime } = processDetectedApps(detectedApps);
+      
+
+      setInstalledApps(sortedApps);
+      setLastScanTime(scanTime);
+      setIsScanning(false);
+      
+    } catch (error) {
+      console.error('Error getting installed apps:', error);
+      setIsScanning(false);
+      Alert.alert('Scan Error', 'Could not complete real-time app scan');
+    }
+  };
+
+
+  useEffect(() => {
+    if (Device.osName) {
+      console.log(`Auto-detecting apps on ${Device.osName} device...`);
+    }
+  }, []);
+
+  
   const handleAddApp = () => {
+
     if (!newAppName.trim()) {
       Alert.alert('Error', 'Please enter an app name');
       return;
     }
 
+  
     const goalMinutes = parseInt(newAppGoal);
     if (isNaN(goalMinutes) || goalMinutes <= 0) {
       Alert.alert('Error', 'Please enter a valid goal time in minutes');
       return;
     }
+
 
     const newApp = {
       id: appUsage.length + 1,
@@ -71,9 +214,8 @@ const HomeScreen = () => {
       color: selectedColor,
       todayTime: 0,
       dailyGoal: goalMinutes,
-      currentSession: 0,
-      isActive: false,
     };
+
 
     setAppUsage([...appUsage, newApp]);
     setNewAppName('');
@@ -81,71 +223,24 @@ const HomeScreen = () => {
     setSelectedIcon('📱');
     setSelectedColor('#69C9FF');
     setShowAddAppModal(false);
+    setShowInstalledApps(false);
     
     Alert.alert('Success', `${newAppName} has been added with a ${goalMinutes} minute daily goal!`);
   };
 
-  const formatTime = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${mins}m`;
-    }
-    return `${mins}m`;
+  
+  const selectInstalledApp = (app) => {
+    setNewAppName(app.name);
+    setSelectedIcon(app.icon);
+    setShowInstalledApps(false);
   };
 
-  const showNotification = (appName, timeLeft) => {
-    const newNotification = {
-      id: Date.now(),
-      message: `Only ${timeLeft} min left for ${appName} today`,
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    setNotifications(prev => [newNotification, ...prev.slice(0, 4)]); //only last 5 notfi
-  };
-
-
-  const simulateAppUsage = (appId) => {
-    setAppUsage(prev => prev.map(app => {
-      if (app.id === appId) {
-        const newTodayTime = app.todayTime + 1;
-        const timeLeft = app.dailyGoal - newTodayTime;
-
-
-        if (timeLeft === 30) {
-          showNotification(app.name, 30);
-        } else if (timeLeft === 15) {
-          showNotification(app.name, 15);
-        } else if (timeLeft === 5) {
-          showNotification(app.name, 5);
-        } else if (timeLeft === 0) {
-          showNotification(app.name, 0);
-        }
-        
-        return {
-          ...app,
-          currentSession: app.currentSession + 1,
-          todayTime: newTodayTime,
-          isActive: true,
-        };
-      }
-      return { ...app, isActive: false };
-    }));
-  }; 
-
-  const startAppSession = (appId) => {
-    const interval = setInterval(() => {
-      simulateAppUsage(appId);
-    }, 1000);
-    
-    setTimeout(() => {
-      clearInterval(interval);
-    }, 30000);
-  };
-
+  
   const AppUsageItem = ({ app }) => {
-    const progressPercentage = Math.min((app.todayTime / app.dailyGoal) * 100, 100);
-    const isOverGoal = app.todayTime > app.dailyGoal;
-    const timeRemaining = app.dailyGoal - app.todayTime;
+    const todayTime = app.todayTime;
+    const progressPercentage = Math.min((todayTime / app.dailyGoal) * 100, 100);
+    const isOverGoal = todayTime > app.dailyGoal;
+    const timeRemaining = Math.max(app.dailyGoal - todayTime, 0);
     
     return (
       <View style={styles.appUsageItem}>
@@ -156,32 +251,18 @@ const HomeScreen = () => {
           <View style={styles.appDetails}>
             <Text style={styles.appName}>{app.name}</Text>
             <Text style={styles.timeText}>
-              Used: {formatTime(app.todayTime)} / {formatTime(app.dailyGoal)}
-              {app.isActive && <Text style={styles.activeText}> • Active</Text>}
+              Used: {formatTime(todayTime)} / {formatTime(app.dailyGoal)}
             </Text>
             {isOverGoal ? (
               <Text style={styles.overGoalText}>
-                Over by {formatTime(app.todayTime - app.dailyGoal)}
+                Over by {formatTime(todayTime - app.dailyGoal)}
               </Text>
             ) : (
               <Text style={styles.remainingText}>
                 {formatTime(timeRemaining)} remaining
               </Text>
             )}
-            {app.currentSession > 0 && (
-              <Text style={styles.sessionText}>
-                Current session: {formatTime(app.currentSession)}
-              </Text>
-            )}
           </View>
-          <TouchableOpacity 
-            style={[styles.demoButton, app.isActive && styles.demoButtonActive]}
-            onPress={() => startAppSession(app.id)}
-          >
-            <Text style={styles.demoButtonText}>
-              {app.isActive ? 'Active' : 'Demo'}
-            </Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { backgroundColor: app.color + '20' }]}>
@@ -203,14 +284,87 @@ const HomeScreen = () => {
     );
   };
 
-  const BadgeItem = ({ badge }) => (
-    <View style={[styles.badgeItem, !badge.earned && styles.badgeItemLocked]}>
-      <Text style={styles.badgeIcon}>{badge.earned ? badge.icon : '🔒'}</Text>
-      <Text style={[styles.badgeText, !badge.earned && styles.badgeTextLocked]}>
-        {badge.name}
-      </Text>
-    </View>
-  );
+
+  const BadgeItem = ({ badge }) => {
+    const handleBadgePress = () => {
+      if (badge.earned) {
+        Alert.alert(
+          `🏆 ${badge.name}`,
+          badge.description,
+          [{ text: 'Awesome!' }]
+        );
+      } else {
+        Alert.alert(
+          '🔒 Badge Locked',
+          `Complete: ${badge.description}`,
+          [{ text: 'Got it!' }]
+        );
+      }
+    };
+
+    return (
+      <TouchableOpacity 
+        style={[
+          styles.badgeItem, 
+          !badge.earned && styles.badgeItemLocked,
+          badge.earned && { borderColor: badge.color, borderWidth: 2 }
+        ]}
+        onPress={handleBadgePress}
+      >
+        <View style={[styles.badgeIconContainer, badge.earned && { backgroundColor: badge.color + '20' }]}>
+          <Text style={styles.badgeIcon}>{badge.earned ? badge.icon : '🔒'}</Text>
+        </View>
+        <Text style={[styles.badgeText, !badge.earned && styles.badgeTextLocked]}>
+          {badge.name}
+        </Text>
+        {badge.earned && (
+          <View style={[styles.badgeEarnedIndicator, { backgroundColor: badge.color }]} />
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  
+  const renderInstalledAppsList = () => {
+    const groupedApps = [];
+    let lastCategory = null;
+    let categoryIndex = 0;
+    
+    installedApps.forEach((app, index) => {
+      
+      if (app.category !== lastCategory) {
+        groupedApps.push(
+          <View key={`category-${categoryIndex}-${app.category}`} style={styles.categoryHeader}>
+            <Text style={styles.categoryTitle}>{app.category}</Text>
+          </View>
+        );
+        lastCategory = app.category;
+        categoryIndex++;
+      }
+      
+     
+      groupedApps.push(
+        <TouchableOpacity
+          key={`app-${index}-${app.packageName}`}
+          style={styles.installedAppItem}
+          onPress={() => selectInstalledApp(app)}
+        >
+          <Text style={styles.installedAppIcon}>{app.icon}</Text>
+          <View style={styles.installedAppInfo}>
+            <Text style={styles.installedAppName}>{app.name}</Text>
+            <Text style={styles.installedAppTime}>
+              Detected: {app.lastDetected}
+            </Text>
+          </View>
+          <View style={styles.liveIndicatorSmall}>
+            <View style={styles.liveDotSmall} />
+          </View>
+        </TouchableOpacity>
+      );
+    });
+    
+    return groupedApps;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -247,26 +401,14 @@ const HomeScreen = () => {
             ))}
           </View>
 
-
-          {notifications.length > 0 && (
-            <View style={styles.notificationsSection}>
-              <Text style={styles.notificationsTitle}>Recent Notifications</Text>
-              {notifications.map((notification) => (
-                <View key={notification.id} style={styles.notificationItem}>
-                  <Text style={styles.notificationText}>{notification.message}</Text>
-                  <Text style={styles.notificationTime}>{notification.timestamp}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-
           <View style={styles.badgesSection}>
             <View style={styles.badgesHeader}>
-              <Text style={styles.badgesTitle}>Badges</Text>
-              <TouchableOpacity>
-                <Ionicons name="chevron-forward" size={24} color="#333" />
-              </TouchableOpacity>
+              <Text style={styles.badgesTitle}>🏆 Badges</Text>
+              <View style={styles.badgeStats}>
+                <Text style={styles.badgeStatsText}>
+                  {badges.filter(b => b.earned).length}/{badges.length} earned
+                </Text>
+              </View>
             </View>
             
             <View style={styles.badgesGrid}>
@@ -297,13 +439,57 @@ const HomeScreen = () => {
               </View>
 
               <Text style={styles.inputLabel}>App Name</Text>
-              <TextInput
-                style={styles.textInput}
-                value={newAppName}
-                onChangeText={setNewAppName}
-                placeholder="Enter app name"
-                placeholderTextColor="#999"
-              />
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={[styles.textInput, { flex: 1 }]}
+                  value={newAppName}
+                  onChangeText={setNewAppName}
+                  placeholder="Select an app from scan results"
+                  placeholderTextColor="#999"
+                  editable={false}
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.browseAppsButton, 
+                    showInstalledApps && styles.browseAppsButtonActive,
+                    isScanning && styles.browseAppsButtonScanning
+                  ]}
+                  onPress={getInstalledApps}
+                  disabled={isScanning}
+                >
+                  <Ionicons 
+                    name={isScanning ? "reload" : "scan"} 
+                    size={16} 
+                    color="#FFF" 
+                    style={{ marginRight: 5 }} 
+                  />
+                  <Text style={styles.browseAppsText}>
+                    {isScanning ? 'Scanning...' : showInstalledApps ? 'Refresh Apps' : 'Scan Device'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showInstalledApps && (
+                <View style={styles.installedAppsContainer}>
+                  <View style={styles.installedAppsHeader}>
+                    <Text style={styles.installedAppsTitle}>📱 Detected Apps:</Text>
+                    <TouchableOpacity 
+                      style={styles.refreshButton}
+                      onPress={getInstalledApps}
+                    >
+                      <Ionicons name="refresh" size={16} color="#4CAF50" />
+                      <Text style={styles.refreshText}>Refresh</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.detectionInfo}>
+                    {isScanning ? '🔄 Scanning device...' : 
+                     `Real-time detection • ${installedApps.length} apps found${lastScanTime ? ` • Last scan: ${lastScanTime.toLocaleTimeString()}` : ''}`}
+                  </Text>
+                  <ScrollView style={styles.installedAppsList} showsVerticalScrollIndicator={false}>
+                    {renderInstalledAppsList()}
+                  </ScrollView>
+                </View>
+              )}
 
               <Text style={styles.inputLabel}>Daily Goal (minutes)</Text>
               <TextInput
@@ -481,6 +667,11 @@ const styles = StyleSheet.create({
     color: '#FF9800',
     marginTop: 2,
   },
+  statsText: {
+    fontSize: 11,
+    color: '#9E9E9E',
+    marginTop: 1,
+  },
   demoButton: {
     backgroundColor: '#E0E0E0',
     paddingHorizontal: 12,
@@ -488,13 +679,19 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginLeft: 'auto',
   },
-  demoButtonActive: {
+  demoButtonInactive: {
     backgroundColor: '#4CAF50',
+  },
+  demoButtonActive: {
+    backgroundColor: '#FF5252',
   },
   demoButtonText: {
     fontSize: 12,
     color: '#333',
     fontWeight: 'bold',
+  },
+  demoButtonTextActive: {
+    color: '#FFF',
   },
   progressBarContainer: {
     height: 8,
@@ -517,36 +714,17 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
-  notificationsSection: {
-    marginTop: 20,
-    marginBottom: 15,
-  },
-  notificationsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
-  },
-  notificationItem: {
-    backgroundColor: '#FFF3E0',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 5,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9800',
-  },
-  notificationText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '600',
-  },
-  notificationTime: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
   badgesSection: {
-    marginTop: 10,
+    backgroundColor: 'white',
+    padding: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   badgesHeader: {
     flexDirection: 'row',
@@ -555,44 +733,64 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   badgesTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
+  },
+  badgeStats: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  badgeStatsText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
   },
   badgesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    gap: 15,
   },
   badgeItem: {
-    width: '22%',
+    width: '30%',
     aspectRatio: 1,
-    backgroundColor: '#FFF',
     borderRadius: 12,
-    justifyContent: 'center',
+    padding: 12,
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'center',
+    borderWidth: 3,
+    backgroundColor: '#f8f9fa',
+  },
+  badgeEarned: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 3,
-  },
-  badgeItemLocked: {
-    backgroundColor: '#999',
+    elevation: 5,
   },
   badgeIcon: {
-    fontSize: 24,
-    marginBottom: 5,
+    fontSize: 28,
+    marginBottom: 8,
   },
-  badgeText: {
-    fontSize: 10,
+  badgeName: {
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#333',
     textAlign: 'center',
+    color: '#333',
   },
-  badgeTextLocked: {
-    color: '#FFF',
+  earnedIndicator: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#4CAF50',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bottomNav: {
     flexDirection: 'row',
@@ -701,6 +899,130 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  browseAppsButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  browseAppsButtonActive: {
+    backgroundColor: '#2196F3',
+  },
+  browseAppsButtonScanning: {
+    backgroundColor: '#FF9800',
+    opacity: 0.8,
+  },
+  browseAppsText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  installedAppsContainer: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 15,
+    maxHeight: 250,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  installedAppsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  installedAppsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  refreshButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#E8F5E8',
+    borderRadius: 12,
+  },
+  refreshText: {
+    fontSize: 12,
+    color: '#4CAF50',
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  detectionInfo: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 10,
+    fontStyle: 'italic',
+  },
+  installedAppsList: {
+    maxHeight: 180,
+  },
+  categoryHeader: {
+    backgroundColor: '#E3F2FD',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    marginBottom: 4,
+    marginTop: 8,
+  },
+  categoryTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#1976D2',
+    textTransform: 'uppercase',
+  },
+  installedAppItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginBottom: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  installedAppIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  installedAppInfo: {
+    flex: 1,
+  },
+  installedAppName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  installedAppTime: {
+    fontSize: 11,
+    color: '#666',
+    marginTop: 2,
+  },
+  liveIndicatorSmall: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  liveDotSmall: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#4CAF50',
   },
 });
 
