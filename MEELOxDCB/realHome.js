@@ -93,10 +93,9 @@ const getCurrentDate = () => {
 const HomeScreen = () => {
 
   const [appUsage, setAppUsage] = useState([
-    { id: 1, name: 'TikTok', icon: '🎵', color: '#69C9FF', todayTime: 84, dailyGoal: 60 },
-    { id: 2, name: 'Instagram', icon: '📷', color: '#FF6B6B', todayTime: 81, dailyGoal: 90 },
-    { id: 3, name: 'Brawlstars', icon: '🎮', color: '#4ECDC4', todayTime: 48, dailyGoal: 120 },
-    { id: 4, name: 'Whatsapp', icon: '💬', color: '#25D366', todayTime: 171, dailyGoal: 180 },
+    { id: 2, name: 'Instagram', icon: '📷', color: '#FF6B6B', todayTime: 21, dailyGoal: 90 },
+    { id: 3, name: 'Brawlstars', icon: '🎮', color: '#4ECDC4', todayTime: 48, dailyGoal: 60 },
+    { id: 4, name: 'Whatsapp', icon: '💬', color: '#25D366', todayTime: 71, dailyGoal: 60 },
   ]);
   
 
@@ -122,6 +121,7 @@ const HomeScreen = () => {
     { name: '7 day streak', earned: true, icon: '🔥', description: '7 consecutive days of goals', color: '#FF5722' },
     { name: '50 goals', earned: false, icon: '✅', description: 'hit 50 daily goals', color: '#4CAF50' },
     { name: '2hr streak', earned: false, icon: '⏰', description: 'stay under 2hr daily limit', color: '#2196F3' },
+    { name: '10 day fire', earned: false, icon: '🔥', description: '100 goals', color: '#df79c9ff' },
     { name: '10 day fire', earned: false, icon: '🔥', description: '10 day streak maintaining goals', color: '#FF5722' },
   ]);
 
