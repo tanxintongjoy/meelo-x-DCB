@@ -72,7 +72,7 @@ export default function LeaderboardScreen() {
             </Text>
           </View>
 
-          {/* stats - badges + points */}
+       
           <View style={styles.statsColumn}>
             <View style={styles.statsCard}>
               <Text style={styles.statsNumber}>10</Text>
@@ -85,7 +85,6 @@ export default function LeaderboardScreen() {
           </View>
         </View>
 
-        {/* sstreakers */}
         <View style={styles.listCard}>
           <Text style={styles.sectionTitle}>Highest SSTreekers</Text>
           {highestSSTreekers.map((user) => (
