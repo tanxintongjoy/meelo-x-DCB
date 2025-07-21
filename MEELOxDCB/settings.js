@@ -8,7 +8,16 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Dimensions,
 } from 'react-native';
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isSmallScreen = screenWidth < 375;
+const isTablet = screenWidth > 768;
+
+
+const scale = (size) => (screenWidth / 375) * size;
+const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
 const SettingsScreen = () => {
   const [reminderInterval, setReminderInterval] = useState('Every 15 mins');
@@ -133,87 +142,93 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
   },
   scrollContainer: {
-    padding: 20,
+    padding: scale(20),
   },
   header: {
-    fontSize: 32,
+    fontSize: moderateScale(32),
     fontWeight: '900',
     color: '#1f2937',
-    marginBottom: 20,
+    marginBottom: scale(20),
+    textAlign: isSmallScreen ? 'center' : 'left',
   },
   section: {
-    marginBottom: 30,
+    marginBottom: scale(30),
   },
   sectionTitle: {
-    fontSize: 26,
+    fontSize: moderateScale(26),
     fontWeight: '900',
     color: '#1f2937',
-    marginBottom: 12,
+    marginBottom: scale(12),
+    textAlign: isSmallScreen ? 'center' : 'left',
   },
   card: {
     backgroundColor: '#fff',
     borderWidth: 4,
     borderColor: '#faebd7',
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: scale(24),
+    padding: scale(20),
     shadowColor: '#faebd7',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: scale(3) },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     elevation: 5,
   },
   itemRow: {
-    flexDirection: 'row',
+    flexDirection: isSmallScreen ? 'column' : 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
+    alignItems: isSmallScreen ? 'flex-start' : 'center',
+    marginBottom: scale(24),
+    gap: isSmallScreen ? scale(8) : 0,
   },
   itemTitle: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: '700',
     color: '#1f2937',
   },
   itemSubtitle: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#6b7280',
-    marginTop: 4,
+    marginTop: scale(4),
   },
   selectButton: {
     backgroundColor: '#faebd7',
     borderWidth: 2,
     borderColor: '#d8c9b8',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    minWidth: 130,
+    borderRadius: scale(16),
+    paddingHorizontal: scale(16),
+    paddingVertical: scale(10),
+    minWidth: scale(130),
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   selectButtonSmall: {
     backgroundColor: '#faebd7',
     borderWidth: 2,
     borderColor: '#d8c9b8',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    minWidth: 100,
+    borderRadius: scale(16),
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(8),
+    minWidth: scale(100),
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   selectButtonText: {
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     color: '#7b6e61',
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: scale(12),
+    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   statusLabel: {
     fontWeight: '700',
-    fontSize: 16,
-    marginRight: 12,
+    fontSize: moderateScale(16),
+    marginRight: scale(12),
     color: '#7b6e61',
   },
   nicknameRow: {

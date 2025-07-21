@@ -6,8 +6,20 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isSmallScreen = screenWidth < 375;
+const isTablet = screenWidth > 768;
+
+
+const scale = (size) => (screenWidth / 375) * size;
+const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
 const streakData = {
   currentStreak: 121,
@@ -33,6 +45,8 @@ const digitalWellnessHeros = [
 ];
 
 export default function LeaderboardScreen() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
@@ -73,8 +87,10 @@ export default function LeaderboardScreen() {
 
           <View style={styles.statsColumn}>
             <View style={styles.statsCard}>
-              <Text style={styles.statsNumber}>10</Text>
-              <Text style={styles.statsLabel}>Badges</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
+                <Text style={styles.statsNumber}>10</Text>
+                <Text style={styles.statsLabel}>Badges</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.statsCard}>
               <Text style={styles.statsNumber}>127</Text>
@@ -96,7 +112,9 @@ export default function LeaderboardScreen() {
         </View>
 
         <View style={styles.listCard}>
-          <Text style={styles.sectionTitle}>Badge Collectors</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
+            <Text style={[styles.sectionTitle, styles.clickableTitle]}>Badge Collectors</Text>
+          </TouchableOpacity>
           {badgeCollectors.map((user) => (
             <View key={user.rank} style={styles.listItem}>
               <Text style={styles.listText}>
@@ -133,77 +151,78 @@ const styles = StyleSheet.create({
     backgroundColor: '#fef9c3',
   },
   container: {
-    padding: 24,
-    paddingBottom: 40,
+    padding: scale(24),
+    paddingBottom: scale(40),
   },
   header: {
-    fontSize: 36,
+    fontSize: moderateScale(36),
     fontWeight: '900',
-    marginBottom: 32,
+    marginBottom: scale(32),
     color: '#1f2937',
     textAlign: 'center',
     letterSpacing: -1,
   },
   streakAndStatsRow: {
-    flexDirection: 'row',
+    flexDirection: isTablet ? 'row' : (isSmallScreen ? 'column' : 'row'),
     justifyContent: 'space-between',
-    marginBottom: 32,
-    gap: 16,
+    marginBottom: scale(32),
+    gap: scale(16),
   },
   streakCard: {
     backgroundColor: '#1f2937',
-    borderRadius: 24,
-    padding: 24,
-    flex: 1,
+    borderRadius: scale(24),
+    padding: scale(24),
+    flex: isTablet ? 2 : 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
+    shadowOffset: { width: 0, height: scale(8) },
     shadowOpacity: 0.15,
-    shadowRadius: 16,
+    shadowRadius: scale(16),
     elevation: 8,
   },
   statsColumn: {
     justifyContent: 'space-between',
-    width: 130,
-    gap: 16,
+    width: isSmallScreen ? '100%' : scale(130),
+    gap: scale(16),
+    flexDirection: isSmallScreen ? 'row' : 'column',
   },
   rowCenter: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: scale(12),
   },
   streakText: {
-    fontSize: 36,
+    fontSize: moderateScale(36),
     color: 'white',
-    marginLeft: 12,
+    marginLeft: scale(12),
     fontWeight: '900',
   },
   streakLabel: {
     color: '#fb923c',
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: scale(16),
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: moderateScale(16),
   },
   weekRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 16,
-    paddingHorizontal: 8,
+    marginBottom: scale(16),
+    paddingHorizontal: scale(8),
   },
   dayColumn: {
     alignItems: 'center',
-    gap: 6,
+    gap: scale(6),
   },
   dayText: {
     color: '#d1d5db',
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: '600',
   },
   dayCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: scale(32),
+    height: scale(32),
+    borderRadius: scale(16),
     backgroundColor: '#4b5563',
     justifyContent: 'center',
     alignItems: 'center',
@@ -211,22 +230,22 @@ const styles = StyleSheet.create({
   dayCompleted: {
     backgroundColor: '#f97316',
     shadowColor: '#f97316',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: scale(4) },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
     elevation: 4,
   },
   check: {
     color: 'white',
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 'bold',
   },
   streakTip: {
     textAlign: 'center',
     color: '#e5e7eb',
-    fontSize: 13,
-    lineHeight: 18,
-    paddingHorizontal: 8,
+    fontSize: moderateScale(13),
+    lineHeight: scale(18),
+    paddingHorizontal: scale(8),
   },
   streakHighlight: {
     color: '#fb923c',
@@ -236,23 +255,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: scale(16),
+    padding: scale(20),
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: scale(4) },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowRadius: scale(8),
     elevation: 4,
+    flex: isSmallScreen ? 1 : 0,
   },
   statsNumber: {
-    fontSize: 28,
+    fontSize: moderateScale(28),
     fontWeight: '900',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: scale(4),
   },
   statsLabel: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     color: '#4b5563',
     fontWeight: '600',
   },
@@ -260,78 +280,82 @@ const styles = StyleSheet.create({
     backgroundColor: '#fde68a',
     borderColor: '#facc15',
     borderWidth: 3,
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 24,
+    borderRadius: scale(20),
+    padding: scale(24),
+    marginBottom: scale(24),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 0, height: scale(6) },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowRadius: scale(12),
     elevation: 6,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: '800',
     textAlign: 'center',
     color: '#1f2937',
-    marginBottom: 20,
+    marginBottom: scale(20),
     letterSpacing: -0.5,
+  },
+  clickableTitle: {
+    textDecorationLine: 'underline',
+    color: '#2563eb',
   },
   listItem: {
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: scale(16),
+    padding: scale(16),
+    marginBottom: scale(12),
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scale(2) },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: scale(4),
     elevation: 2,
   },
   listText: {
     fontWeight: '700',
     color: '#1f2937',
-    fontSize: 16,
+    fontSize: moderateScale(16),
     flex: 1,
   },
   listScore: {
-    fontSize: 20,
+    fontSize: moderateScale(20),
     fontWeight: '900',
     color: '#dc2626',
-    marginLeft: 12,
+    marginLeft: scale(12),
   },
   tipBubble: {
     backgroundColor: 'white',
     borderColor: '#9ca3af',
     borderWidth: 2,
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: scale(20),
+    padding: scale(24),
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: scale(8),
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 0, height: scale(6) },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
+    shadowRadius: scale(12),
     elevation: 6,
   },
   tipLabel: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     color: '#6b7280',
-    marginBottom: 8,
+    marginBottom: scale(8),
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   tipText: {
-    fontSize: 17,
+    fontSize: moderateScale(17),
     fontWeight: '700',
     color: '#1f2937',
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: scale(24),
   },
 });

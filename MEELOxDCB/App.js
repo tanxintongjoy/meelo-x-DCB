@@ -11,6 +11,7 @@ import {
   Alert,
   SafeAreaView,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -22,6 +23,16 @@ import LeaderboardScreen from './leaderboardview.js';
 import HomeScreen from './realHome.js';
 import ThemeIdeasScreen from './suggestionview.js';
 import DetailedInfo from './detailedview.js';
+import BadgesScreen from './badgesview.js';
+
+// Get screen dimensions for responsive design
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isSmallScreen = screenWidth < 375;
+const isTablet = screenWidth > 768;
+
+// Responsive scaling functions
+const scale = (size) => (screenWidth / 375) * size;
+const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -195,7 +206,7 @@ const TabNavigator = () => (
 
         return (
           <View style={[styles.tabIconContainer, focused && styles.activeTabIconContainer]}>
-            <Ionicons name={iconName} size={24} color={focused ? '#fff' : '#666'} />
+            <Ionicons name={iconName} size={moderateScale(24)} color={focused ? '#fff' : '#666'} />
           </View>
         );
       },
@@ -220,6 +231,7 @@ export default function App() {
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         <Stack.Screen name="ThemeIdeas" component={ThemeIdeasScreen} />
         <Stack.Screen name="DetailedInfo" component={DetailedInfo} />
+        <Stack.Screen name="Badges" component={BadgesScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -228,43 +240,43 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { marginTop: 10, fontSize: 16, color: '#666' },
+  loadingText: { marginTop: scale(10), fontSize: moderateScale(16), color: '#666' },
   header: {
-    flexDirection: 'row',
+    flexDirection: isSmallScreen ? 'column' : 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    alignItems: isSmallScreen ? 'stretch' : 'flex-start',
+    paddingHorizontal: scale(20),
+    paddingVertical: scale(20),
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
-  headerContent: { flex: 1 },
-  headerTitle: { fontSize: 36, fontWeight: 'bold', color: '#333' },
-  headerSubtitle: { fontSize: 16, color: '#666', marginTop: 4 },
-  themeButton: { alignItems: 'center', paddingTop: 10 },
-  themeText: { fontSize: 12, color: '#666', textAlign: 'center', marginBottom: 5 },
-  searchContainer: { paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#fff' },
+  headerContent: { flex: 1, marginBottom: isSmallScreen ? scale(12) : 0 },
+  headerTitle: { fontSize: moderateScale(36), fontWeight: 'bold', color: '#333' },
+  headerSubtitle: { fontSize: moderateScale(16), color: '#666', marginTop: scale(4) },
+  themeButton: { alignItems: 'center', paddingTop: scale(10) },
+  themeText: { fontSize: moderateScale(12), color: '#666', textAlign: 'center', marginBottom: scale(5) },
+  searchContainer: { paddingHorizontal: scale(20), paddingVertical: scale(10), backgroundColor: '#fff' },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8f8f8',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    borderRadius: scale(25),
+    paddingHorizontal: scale(15),
+    paddingVertical: scale(10),
     borderWidth: 1,
     borderColor: '#ddd',
   },
-  searchInput: { flex: 1, fontSize: 16, color: '#333' },
-  listContainer: { paddingVertical: 10 },
+  searchInput: { flex: 1, fontSize: moderateScale(16), color: '#333' },
+  listContainer: { paddingVertical: scale(10) },
   announcementCard: {
-    marginHorizontal: 15,
-    marginVertical: 8,
-    borderRadius: 12,
+    marginHorizontal: scale(15),
+    marginVertical: scale(8),
+    borderRadius: scale(12),
     overflow: 'hidden',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: scale(2) },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
@@ -292,13 +304,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingVertical: 5,
-    height: 100,
+    paddingVertical: scale(5),
+    height: scale(100),
+    paddingBottom: scale(10),
   },
   tabIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: scale(50),
+    height: scale(50),
+    borderRadius: scale(25),
     backgroundColor: '#f0f0f0',
     alignItems: 'center',
     justifyContent: 'center',
@@ -307,11 +320,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
   },
   tabText: {
-    fontSize: 10,
+    fontSize: moderateScale(10),
     color: '#666',
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: scale(5),
   },
   activeTabText: {
     color: '#007AFF',
