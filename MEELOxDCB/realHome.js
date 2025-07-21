@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Device from 'expo-device';
-import InstalledApps from 'react-native-installed-apps';
+
 
 
 const APP_DATABASE = [
@@ -128,26 +128,24 @@ const HomeScreen = () => {
   const scanInstalledApps = async () => {
     try {
       if (Device.platformOS === 'android') {
-        const apps = await InstalledApps.getApps();
         
-        
-        const userApps = apps.filter(app => 
-          app.packageName && 
-          !app.packageName.startsWith('com.android') &&
-          !app.packageName.startsWith('android.') &&
-          !app.packageName.startsWith('com.google.android') &&
-          app.appName && 
-          app.appName.trim() !== ''
+        Alert.alert(
+          'Development Mode',
+          'Real app scanning requires a production build. Using demo data for now.',
+          [{ text: 'OK' }]
         );
         
-        return userApps.map(app => ({
-          name: app.appName,
-          packageName: app.packageName,
-          icon: app.icon || '📱',
-          category: 'Unknown',
-        }));
+        
+        const demoApps = [
+          { name: 'Instagram', packageName: 'com.instagram.android', icon: '📷', category: 'Social' },
+          { name: 'WhatsApp', packageName: 'com.whatsapp', icon: '💬', category: 'Social' },
+          { name: 'TikTok', packageName: 'com.zhiliaoapp.musically', icon: '🎵', category: 'Entertainment' },
+          { name: 'YouTube', packageName: 'com.google.android.youtube', icon: '📺', category: 'Entertainment' },
+          { name: 'Spotify', packageName: 'com.spotify.music', icon: '🎵', category: 'Music' },
+        ];
+        
+        return demoApps;
       } else {
-      
         Alert.alert(
           'Platform Not Supported',
           'Real app scanning is only available on Android devices in production builds.',
@@ -159,10 +157,14 @@ const HomeScreen = () => {
       console.error('Error scanning apps:', error);
       Alert.alert(
         'App Scanning Error',
-        'Unable to scan installed apps. Make sure you have the necessary permissions.',
+        'Unable to scan installed apps. Using demo data for development.',
         [{ text: 'OK' }]
       );
-      return [];
+      
+   
+      return [
+        { name: 'Demo App', packageName: 'com.demo.app', icon: '📱', category: 'Demo' },
+      ];
     }
   };
 
