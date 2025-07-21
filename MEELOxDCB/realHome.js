@@ -999,7 +999,6 @@ const styles = StyleSheet.create({
   },
   selectedColorOption: {
     borderColor: '#ffffffff',
-    shadowOpacity: 0.3,
     transform: [{ scale: 1.1 }],
   },
   addAppButton: {

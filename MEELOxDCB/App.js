@@ -25,12 +25,12 @@ import ThemeIdeasScreen from './suggestionview.js';
 import DetailedInfo from './detailedview.js';
 import BadgesScreen from './badgesview.js';
 
-// Get screen dimensions for responsive design
+
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 const isTablet = screenWidth > 768;
 
-// Responsive scaling functions
+
 const scale = (size) => (screenWidth / 375) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
@@ -106,7 +106,6 @@ const SearchBar = ({ searchText, onSearch }) => (
   </View>
 );
 
-// AnnouncementCard receives navigation so it can navigate on press
 const AnnouncementCard = ({ item, index, navigation }) => {
   const isEven = index % 2 === 0;
   const imageUrl = getImageUrl(item.image);
@@ -304,9 +303,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingVertical: scale(5),
-    height: scale(100),
-    paddingBottom: scale(10),
+    paddingVertical: scale(15),
+    height: scale(120),
+    paddingBottom: scale(20),
+    paddingTop: scale(20),
   },
   tabIconContainer: {
     width: scale(50),
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: scale(5),
+    marginTop: scale(12),
   },
   activeTabText: {
     color: '#007AFF',

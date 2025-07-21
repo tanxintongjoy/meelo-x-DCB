@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
+  TextInput,
 } from 'react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -25,6 +26,7 @@ const SettingsScreen = () => {
   const [motivationalTips, setMotivationalTips] = useState(true);
   const [privacyLevel, setPrivacyLevel] = useState('show');
   const [showNicknameOnly, setShowNicknameOnly] = useState(false);
+  const [nickname, setNickname] = useState('');
 
   const reminderOptions = [
     'every 5 mins',
@@ -59,46 +61,50 @@ const SettingsScreen = () => {
           <Text style={styles.sectionTitle}>notifications</Text>
 
           <View style={styles.card}>
-
-
             <View style={styles.itemRow}>
-              <View>
+              <View style={styles.leftContent}>
                 <Text style={styles.itemTitle}>reminders:</Text>
-                <Text style={styles.itemSubtitle}>How often???</Text>
+                <Text style={styles.itemSubtitle}>how often???</Text>
               </View>
-              <TouchableOpacity onPress={cycleReminder} style={styles.selectButton}>
-                <Text style={styles.selectButtonText}>{reminderInterval}</Text>
-              </TouchableOpacity>
+              <View style={styles.rightControl}>
+                <TouchableOpacity onPress={cycleReminder} style={styles.selectButton}>
+                  <Text style={styles.selectButtonText}>{reminderInterval}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-
             <View style={styles.itemRow}>
-              <View>
+              <View style={styles.leftContent}>
                 <Text style={styles.itemTitle}>pomodoro style breaks:</Text>
                 <Text style={styles.itemSubtitle}>(25 work : 5 min rest)</Text>
               </View>
-              <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{pomodoroBreaks ? 'yes' : 'no'}</Text>
-                <Switch
-                  value={pomodoroBreaks}
-                  onValueChange={setPomodoroBreaks}
-                  trackColor={{ false: '#ccc', true: '#faebd7' }}
-                  thumbColor={pomodoroBreaks ? '#faebd7' : '#f3f4f6'}
-                />
+              <View style={styles.rightControl}>
+                <View style={styles.switchContainer}>
+                  <Text style={styles.statusLabel}>{pomodoroBreaks ? 'yes' : 'no'}</Text>
+                  <Switch
+                    value={pomodoroBreaks}
+                    onValueChange={setPomodoroBreaks}
+                    trackColor={{ false: '#ccc', true: '#faebd7' }}
+                    thumbColor={pomodoroBreaks ? '#faebd7' : '#f3f4f6'}
+                  />
+                </View>
               </View>
             </View>
 
-//motivational tips - pibble pibble pibble
             <View style={styles.itemRow}>
-              <Text style={styles.itemTitle}>motivational tips:</Text>
-              <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{motivationalTips ? 'yes' : 'no'}</Text>
-                <Switch
-                  value={motivationalTips}
-                  onValueChange={setMotivationalTips}
-                  trackColor={{ false: '#ccc', true: '#faebd7' }}
-                  thumbColor={motivationalTips ? '#faebd7' : '#f3f4f6'}
-                />
+              <View style={styles.leftContent}>
+                <Text style={styles.itemTitle}>motivational tips:</Text>
+              </View>
+              <View style={styles.rightControl}>
+                <View style={styles.switchContainer}>
+                  <Text style={styles.statusLabel}>{motivationalTips ? 'yes' : 'no'}</Text>
+                  <Switch
+                    value={motivationalTips}
+                    onValueChange={setMotivationalTips}
+                    trackColor={{ false: '#ccc', true: '#faebd7' }}
+                    thumbColor={motivationalTips ? '#faebd7' : '#f3f4f6'}
+                  />
+                </View>
               </View>
             </View>
           </View>
@@ -108,24 +114,47 @@ const SettingsScreen = () => {
           <Text style={styles.sectionTitle}>privacy</Text>
 
           <View style={styles.card}>
-    // privacy
             <View style={styles.itemRow}>
-              <Text style={styles.itemTitle}>profile visibility:</Text>
-              <TouchableOpacity onPress={cyclePrivacy} style={styles.selectButtonSmall}>
-                <Text style={styles.selectButtonText}>{privacyLevel}</Text>
-              </TouchableOpacity>
+              <View style={styles.leftContent}>
+                <Text style={styles.itemTitle}>profile visibility:</Text>
+              </View>
+              <View style={styles.rightControl}>
+                <TouchableOpacity onPress={cyclePrivacy} style={styles.selectButtonSmall}>
+                  <Text style={styles.selectButtonText}>{privacyLevel}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-   //nickname
-            <View style={[styles.itemRow, styles.nicknameRow]}>
-              <Text style={styles.itemTitle}>only show nickname</Text>
-              <View style={styles.switchContainer}>
-                <Text style={styles.statusLabel}>{showNicknameOnly ? 'on' : 'off'}</Text>
-                <Switch
-                  value={showNicknameOnly}
-                  onValueChange={setShowNicknameOnly}
-                  trackColor={{ false: '#ccc', true: '#faebd7' }}
-                  thumbColor={showNicknameOnly ? '#faebd7' : '#f3f4f6'}
+            <View style={styles.itemRow}>
+              <View style={styles.leftContent}>
+                <Text style={styles.itemTitle}>only show nickname</Text>
+              </View>
+              <View style={styles.rightControl}>
+                <View style={styles.switchContainer}>
+                  <Text style={styles.statusLabel}>{showNicknameOnly ? 'on' : 'off'}</Text>
+                  <Switch
+                    value={showNicknameOnly}
+                    onValueChange={setShowNicknameOnly}
+                    trackColor={{ false: '#ccc', true: '#faebd7' }}
+                    thumbColor={showNicknameOnly ? '#faebd7' : '#f3f4f6'}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={[styles.itemRow, styles.nicknameInputRow]}>
+              <View style={styles.leftContent}>
+                <Text style={styles.itemTitle}>nickname:</Text>
+                <Text style={styles.itemSubtitle}>enter your display name</Text>
+              </View>
+              <View style={styles.rightControl}>
+                <TextInput
+                  style={styles.nicknameInput}
+                  value={nickname}
+                  onChangeText={setNickname}
+                  placeholder="your nickname"
+                  placeholderTextColor="#9ca3af"
+                  maxLength={20}
                 />
               </View>
             </View>
@@ -174,11 +203,20 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   itemRow: {
-    flexDirection: isSmallScreen ? 'column' : 'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: isSmallScreen ? 'flex-start' : 'center',
+    alignItems: 'center',
     marginBottom: scale(24),
-    gap: isSmallScreen ? scale(8) : 0,
+    minHeight: scale(44),
+  },
+  leftContent: {
+    flex: 1,
+    marginRight: scale(16),
+  },
+  rightControl: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    minWidth: scale(130),
   },
   itemTitle: {
     fontSize: moderateScale(18),
@@ -200,7 +238,6 @@ const styles = StyleSheet.create({
     minWidth: scale(130),
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   selectButtonSmall: {
     backgroundColor: '#faebd7',
@@ -209,10 +246,9 @@ const styles = StyleSheet.create({
     borderRadius: scale(16),
     paddingHorizontal: scale(12),
     paddingVertical: scale(8),
-    minWidth: scale(100),
+    minWidth: scale(130),
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   selectButtonText: {
     fontWeight: '700',
@@ -222,17 +258,29 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    minWidth: scale(130),
     gap: scale(12),
-    alignSelf: isSmallScreen ? 'flex-end' : 'auto',
   },
   statusLabel: {
     fontWeight: '700',
     fontSize: moderateScale(16),
-
     color: '#7b6e61',
   },
-  nicknameRow: {
+  nicknameInputRow: {
     marginBottom: 0,
+  },
+  nicknameInput: {
+    backgroundColor: '#f9fafb',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    borderRadius: scale(12),
+    paddingHorizontal: scale(12),
+    paddingVertical: scale(10),
+    fontSize: moderateScale(16),
+    color: '#1f2937',
+    minWidth: scale(130),
+    textAlign: 'center',
   },
 });
 
