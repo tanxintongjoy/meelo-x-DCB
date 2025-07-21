@@ -764,6 +764,15 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     backgroundColor: '#f8f9fa',
   },
+  badgeItemLocked: {
+    opacity: 0.6,
+    borderColor: '#E0E0E0',
+  },
+  badgeIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
   badgeEarned: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -774,6 +783,23 @@ const styles = StyleSheet.create({
   badgeIcon: {
     fontSize: 28,
     marginBottom: 8,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+  badgeTextLocked: {
+    color: '#999',
+  },
+  badgeEarnedIndicator: {
+    position: 'absolute',
+    top: -3,
+    right: -3,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
   badgeName: {
     fontSize: 12,
