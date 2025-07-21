@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Device from 'expo-device';
+import InstalledApps from 'react-native-installed-apps';
 
 
 const APP_DATABASE = [
@@ -124,8 +125,45 @@ const HomeScreen = () => {
     return isIOS ? [...APP_DATABASE, ...IOS_APPS] : APP_DATABASE;
   };
 
-  const simulateAppDetection = (allApps) => {
-    return allApps.filter(() => Math.random() > 0.25);
+  const scanInstalledApps = async () => {
+    try {
+      if (Device.platformOS === 'android') {
+        const apps = await InstalledApps.getApps();
+        
+        
+        const userApps = apps.filter(app => 
+          app.packageName && 
+          !app.packageName.startsWith('com.android') &&
+          !app.packageName.startsWith('android.') &&
+          !app.packageName.startsWith('com.google.android') &&
+          app.appName && 
+          app.appName.trim() !== ''
+        );
+        
+        return userApps.map(app => ({
+          name: app.appName,
+          packageName: app.packageName,
+          icon: app.icon || '📱',
+          category: 'Unknown',
+        }));
+      } else {
+      
+        Alert.alert(
+          'Platform Not Supported',
+          'Real app scanning is only available on Android devices in production builds.',
+          [{ text: 'OK' }]
+        );
+        return [];
+      }
+    } catch (error) {
+      console.error('Error scanning apps:', error);
+      Alert.alert(
+        'App Scanning Error',
+        'Unable to scan installed apps. Make sure you have the necessary permissions.',
+        [{ text: 'OK' }]
+      );
+      return [];
+    }
   };
 
 
@@ -167,8 +205,8 @@ const HomeScreen = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
 
-      const allApps = getAllApps();
-      const detectedApps = simulateAppDetection(allApps);
+      
+      const detectedApps = await scanInstalledApps();
       const { sortedApps, scanTime } = processDetectedApps(detectedApps);
       
 
@@ -745,17 +783,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 15,
   },
   badgeItem: {
     width: '30%',
     aspectRatio: 1,
     borderRadius: 12,
-    padding: 12,
+    padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 3,
+    borderWidth: 2,
     backgroundColor: '#f8f9fa',
+    marginBottom: 10,
   },
   badgeItemLocked: {
     opacity: 0.6,
@@ -774,11 +812,11 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   badgeIcon: {
-    fontSize: 28,
-    marginBottom: 8,
+    fontSize: 24,
+    marginBottom: 4,
   },
   badgeText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#333',
