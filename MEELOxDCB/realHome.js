@@ -103,14 +103,14 @@ const HomeScreen = () => {
     setNotifications(prev => [newNotification, ...prev.slice(0, 4)]); //only last 5 notfi
   };
 
-  //app usage 
+
   const simulateAppUsage = (appId) => {
     setAppUsage(prev => prev.map(app => {
       if (app.id === appId) {
         const newTodayTime = app.todayTime + 1;
         const timeLeft = app.dailyGoal - newTodayTime;
-        
-        //notifications when limit is abt ot be up
+
+
         if (timeLeft === 30) {
           showNotification(app.name, 30);
         } else if (timeLeft === 15) {
@@ -131,7 +131,7 @@ const HomeScreen = () => {
       return { ...app, isActive: false };
     }));
   }; 
-// demo
+
   const startAppSession = (appId) => {
     const interval = setInterval(() => {
       simulateAppUsage(appId);
