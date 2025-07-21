@@ -22,7 +22,7 @@ const scale = (size) => (screenWidth / 375) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
 const streakData = {
-  currentStreak: 121,
+  currentStreak: 0,
   completedDays: [0],
 };
 
@@ -62,19 +62,19 @@ export default function LeaderboardScreen() {
 
             <Text style={styles.streakTip}>
               great start! keep your{' '}
-              <Text style={styles.streakHighlight}>perfect streak</Text> going tomorrow.
+              <Text style={styles.streakHighlight}>streak</Text> going tomorrow.
             </Text>
           </View>
 
           <View style={styles.statsColumn}>
             <View style={styles.statsCard}>
               <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
-                <Text style={styles.statsNumber}>10</Text>
+                <Text style={styles.statsNumber}>2</Text>
                 <Text style={styles.statsLabel}>badges</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.statsCard}>
-              <Text style={styles.statsNumber}>127</Text>
+              <Text style={styles.statsNumber}>20</Text>
               <Text style={styles.statsLabel}>points</Text>
             </View>
           </View>
