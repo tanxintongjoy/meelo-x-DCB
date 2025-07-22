@@ -26,7 +26,7 @@ const isSmallScreen = screenWidth < 375;
 const scale = (size) => (screenWidth / 375) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
-// App database with URL schemes for iOS detection
+
 const APP_DATABASE = [
   { name: 'WhatsApp', packageName: 'com.whatsapp', urlScheme: 'whatsapp://', icon: '💬', category: 'Social' },
   { name: 'Instagram', packageName: 'com.instagram.android', urlScheme: 'instagram://', icon: '📷', category: 'Social' },
@@ -43,7 +43,7 @@ const APP_DATABASE = [
   { name: 'Twitter', packageName: 'com.twitter.android', urlScheme: 'twitter://', icon: '🐦', category: 'Social' },
 ];
 
-// Cross-platform app detection function
+
 const checkAppInstalled = async (app) => {
   try {
     if (Platform.OS === 'android') {
@@ -58,7 +58,7 @@ const checkAppInstalled = async (app) => {
   }
 };
 
-// Android usage stats helper
+
 const getAndroidUsageStats = async () => {
   try {
     const granted = await UsageStats.isUsageStatsPermissionGranted();
@@ -74,11 +74,12 @@ const getAndroidUsageStats = async () => {
       return [];
     }
     const endTime = Date.now();
-    const startTime = endTime - (24 * 60 * 60 * 1000); // 24 hours ago
+    const startTime = endTime - (24 * 60 * 60 * 1000); 
     const stats = await UsageStats.queryUsageStats(startTime, endTime);
     return stats.map(app => ({
       packageName: app.packageName,
-      totalTimeInForeground: Math.floor(app.totalTimeInForeground / (1000 * 60)), // to minutes
+      totalTimeInForeground: Math.floor(app.totalTimeInForeground / (1000 * 60)), 
+      
     }));
   } catch (error) {
     console.error('Error getting usage stats:', error);
@@ -135,8 +136,6 @@ const HomeScreen = () => {
       setAppUsage(updatedApps);
       updateGoalsFromUsage(updatedApps);
     } else {
-        // On iOS, we can't get other apps' usage. We can only track our own app's usage.
-        // This part is simplified as per the instructions.
         updateGoalsFromUsage(currentApps);
     }
   };
@@ -153,7 +152,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     checkUsagePermission();
-    const interval = setInterval(() => fetchUsageData(appUsage), 5 * 60 * 1000); // Refresh every 5 mins
+    const interval = setInterval(() => fetchUsageData(appUsage), 30 * 60 * 1000); 
     return () => clearInterval(interval);
   }, [appUsage]);
 
