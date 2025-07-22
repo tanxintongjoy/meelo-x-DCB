@@ -23,10 +23,16 @@
       "permissions": [
         "android.permission.QUERY_ALL_PACKAGES"
       ],
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "dcb.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "21a45a0b-d480-41fe-9947-1979216cd49d"
+      }
     }
   }
 }
