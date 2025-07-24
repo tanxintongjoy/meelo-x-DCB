@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -26,7 +26,6 @@ const isSmallScreen = screenWidth < 375;
 const scale = (size) => (screenWidth / 375) * size;
 const moderateScale = (size, factor = 0.5) => size + (scale(size) - size) * factor;
 
-
 const APP_DATABASE = [
   { name: 'WhatsApp', packageName: 'com.whatsapp', urlScheme: 'whatsapp://', icon: '💬', category: 'Social' },
   { name: 'Instagram', packageName: 'com.instagram.android', urlScheme: 'instagram://', icon: '📷', category: 'Social' },
@@ -43,21 +42,17 @@ const APP_DATABASE = [
   { name: 'Twitter', packageName: 'com.twitter.android', urlScheme: 'twitter://', icon: '🐦', category: 'Social' },
 ];
 
-
 const checkAppInstalled = async (app) => {
   try {
     if (Platform.OS === 'android') {
       return await DeviceInfo.isAppInstalled(app.packageName);
-    } else if (Platform.OS === 'ios') {
-      return await Linking.canOpenURL(app.urlScheme);
     }
-    return false;
+    return await Linking.canOpenURL(app.urlScheme);
   } catch (error) {
     console.error(`Error checking ${app.name}:`, error);
     return false;
   }
 };
-
 
 const getAndroidUsageStats = async () => {
   try {
@@ -74,12 +69,11 @@ const getAndroidUsageStats = async () => {
       return [];
     }
     const endTime = Date.now();
-    const startTime = endTime - (24 * 60 * 60 * 1000); 
+    const startTime = endTime - (24 * 60 * 60 * 1000);
     const stats = await UsageStats.queryUsageStats(startTime, endTime);
     return stats.map(app => ({
       packageName: app.packageName,
-      totalTimeInForeground: Math.floor(app.totalTimeInForeground / (1000 * 60)), 
-      
+      totalTimeInForeground: Math.floor(app.totalTimeInForeground / (1000 * 60)),
     }));
   } catch (error) {
     console.error('Error getting usage stats:', error);
@@ -95,15 +89,6 @@ const formatTime = (minutes) => {
 
 const HomeScreen = () => {
   const [appUsage, setAppUsage] = useState([]);
-  const [showAddAppModal, setShowAddAppModal] = useState(false);
-  const [newAppName, setNewAppName] = useState('');
-  const [newAppGoal, setNewAppGoal] = useState('60');
-  const [selectedIcon, setSelectedIcon] = useState('📱');
-  const [selectedColor, setSelectedColor] = useState('#69C9FF');
-  const [installedApps, setInstalledApps] = useState([]);
-  const [showInstalledApps, setShowInstalledApps] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [usageStatsPermission, setUsageStatsPermission] = useState(false);
   const [badges, setBadges] = useState([
     { name: 'first app', earned: false, icon: '📱', description: 'add your first tracked app', color: '#9C27B0' },
     { name: '7 day streak', earned: false, icon: '🔥', description: '7 consecutive days of goals', color: '#FF5722' },
@@ -111,50 +96,58 @@ const HomeScreen = () => {
     { name: '2hr streak', earned: false, icon: '⏰', description: 'stay under 2hr daily limit', color: '#2196F3' },
     { name: '10 day fire', earned: false, icon: '🔥', description: '10 day streak maintaining goals', color: '#FF5722' },
   ]);
-  const [goalsHit, setGoalsHit] = useState(0);
-  const [totalGoals, setTotalGoals] = useState(0);
+  const [goalStats, setGoalStats] = useState({ hit: 0, total: 0 });
+  const [usageStatsPermission, setUsageStatsPermission] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [installedApps, setInstalledApps] = useState({ show: false, data: [] });
+  const [modal, setModal] = useState({
+    visible: false,
+    appName: '',
+    goal: '60',
+    icon: '📱',
+    color: '#69C9FF',
+  });
 
   const availableIcons = ['📱', '🎵', '📷', '🎮', '💬', '📺', '🛒', '📚', '🏃', '🍔', '🎬', '📧'];
   const availableColors = ['#69C9FF', '#FF6B6B', '#4ECDC4', '#25D366', '#FFD700', '#FF69B4', '#9370DB', '#FF4500'];
 
-  const updateGoalsFromUsage = (apps) => {
+  const updateGoalsFromUsage = useCallback((apps) => {
     const hit = apps.filter(app => app.todayTime <= app.dailyGoal).length;
-    setGoalsHit(hit);
-    setTotalGoals(apps.length);
+    setGoalStats({ hit, total: apps.length });
     if (apps.length > 0 && !badges.find(b => b.name === 'first app').earned) {
-        setBadges(prev => prev.map(b => b.name === 'first app' ? {...b, earned: true} : b));
+      setBadges(prev => prev.map(b => b.name === 'first app' ? { ...b, earned: true } : b));
     }
-  };
+  }, [badges]);
 
-  const fetchUsageData = async (currentApps) => {
-    if (Platform.OS === 'android') {
-      const usageData = await getAndroidUsageStats();
-      const updatedApps = currentApps.map(app => {
-        const realData = usageData.find(usage => usage.packageName === app.packageName);
-        return realData ? { ...app, todayTime: realData.totalTimeInForeground } : app;
-      });
-      setAppUsage(updatedApps);
-      updateGoalsFromUsage(updatedApps);
-    } else {
-        updateGoalsFromUsage(currentApps);
+  const fetchUsageData = useCallback(async () => {
+    if (Platform.OS !== 'android') {
+      updateGoalsFromUsage(appUsage);
+      return;
     }
-  };
+    const usageData = await getAndroidUsageStats();
+    const updatedApps = appUsage.map(app => {
+      const realData = usageData.find(usage => usage.packageName === app.packageName);
+      return realData ? { ...app, todayTime: realData.totalTimeInForeground } : app;
+    });
+    setAppUsage(updatedApps);
+    updateGoalsFromUsage(updatedApps);
+  }, [appUsage, updateGoalsFromUsage]);
 
-  const checkUsagePermission = async () => {
+  const checkUsagePermission = useCallback(async () => {
     if (Platform.OS === 'android') {
       const granted = await UsageStats.isUsageStatsPermissionGranted();
       setUsageStatsPermission(granted);
       if (granted) {
-        fetchUsageData(appUsage);
+        fetchUsageData();
       }
     }
-  };
+  }, [fetchUsageData]);
 
   useEffect(() => {
     checkUsagePermission();
-    const interval = setInterval(() => fetchUsageData(appUsage), 30 * 60 * 1000); 
+    const interval = setInterval(fetchUsageData, 30 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [appUsage]);
+  }, [checkUsagePermission, fetchUsageData]);
 
   const handleScanApps = async () => {
     setIsScanning(true);
@@ -164,41 +157,34 @@ const HomeScreen = () => {
         detectedApps.push(app);
       }
     }
-    setInstalledApps(detectedApps);
+    setInstalledApps({ show: true, data: detectedApps });
     setIsScanning(false);
-    setShowInstalledApps(true);
     if (detectedApps.length === 0) {
-        Alert.alert('no apps found', 'we couldn\'t detect any of the common apps on your device.');
+      Alert.alert('no apps found', 'we couldn\'t detect any of the common apps on your device.');
     }
   };
 
   const handleAddApp = () => {
-    if (!newAppName.trim() || !newAppGoal.trim()) {
-      Alert.alert('error', 'please fill all fields.');
-      return;
+    if (!modal.appName.trim() || !modal.goal.trim()) {
+      return Alert.alert('error', 'please fill all fields.');
     }
-    const selectedApp = installedApps.find(app => app.name === newAppName) || { packageName: '' };
+    const selectedApp = installedApps.data.find(app => app.name === modal.appName) || {};
     const newApp = {
       id: Date.now(),
-      name: newAppName,
-      icon: selectedIcon,
-      color: selectedColor,
+      name: modal.appName,
+      icon: modal.icon,
+      color: modal.color,
       todayTime: 0,
-      dailyGoal: parseInt(newAppGoal),
-      packageName: selectedApp.packageName,
+      dailyGoal: parseInt(modal.goal),
+      packageName: selectedApp.packageName || '',
     };
-    const updatedApps = [...appUsage, newApp];
-    setAppUsage(updatedApps);
-    fetchUsageData(updatedApps);
-    setShowAddAppModal(false);
-    setNewAppName('');
-    setNewAppGoal('60');
+    setAppUsage(prev => [...prev, newApp]);
+    setModal({ visible: false, appName: '', goal: '60', icon: '📱', color: '#69C9FF' });
   };
 
   const selectInstalledApp = (app) => {
-    setNewAppName(app.name);
-    setSelectedIcon(app.icon);
-    setShowInstalledApps(false);
+    setModal(prev => ({ ...prev, appName: app.name, icon: app.icon }));
+    setInstalledApps(prev => ({ ...prev, show: false }));
   };
 
   const AppUsageItem = ({ app }) => {
@@ -240,8 +226,8 @@ const HomeScreen = () => {
         <PermissionPrompt />
         <View style={styles.mainCard}>
           <Text style={styles.cardTitle}>daily summaries:</Text>
-          <Text style={styles.goalProgressText}>you've hit {goalsHit}/{totalGoals} goals today!</Text>
-          <TouchableOpacity style={styles.addAppButton} onPress={() => setShowAddAppModal(true)}>
+          <Text style={styles.goalProgressText}>you've hit {goalStats.hit}/{goalStats.total} goals today!</Text>
+          <TouchableOpacity style={styles.addAppButton} onPress={() => setModal(prev => ({ ...prev, visible: true }))}>
             <Ionicons name="add-circle" size={24} color="#fff" />
             <Text style={styles.addAppButtonText}>add new app</Text>
           </TouchableOpacity>
@@ -266,7 +252,7 @@ const HomeScreen = () => {
           </ScrollView>
         </View>
 
-        <Modal visible={showAddAppModal} animationType="slide" transparent={true}>
+        <Modal visible={modal.visible} animationType="slide" transparent={true}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>add new app</Text>
@@ -274,9 +260,9 @@ const HomeScreen = () => {
                 <Text style={styles.scanButtonText}>{isScanning ? 'scanning...' : 'scan device for apps'}</Text>
               </TouchableOpacity>
               
-              {showInstalledApps && (
+              {installedApps.show && (
                 <FlatList
-                  data={installedApps}
+                  data={installedApps.data}
                   renderItem={({ item }) => (
                     <TouchableOpacity style={styles.installedAppItem} onPress={() => selectInstalledApp(item)}>
                       <Text>{item.icon} {item.name}</Text>
@@ -286,12 +272,12 @@ const HomeScreen = () => {
                 />
               )}
 
-              <TextInput style={styles.input} placeholder="app name" value={newAppName} onChangeText={setNewAppName} />
-              <TextInput style={styles.input} placeholder="daily goal (minutes)" value={newAppGoal} onChangeText={setNewAppGoal} keyboardType="numeric" />
+              <TextInput style={styles.input} placeholder="app name" value={modal.appName} onChangeText={text => setModal(p => ({ ...p, appName: text }))} />
+              <TextInput style={styles.input} placeholder="daily goal (minutes)" value={modal.goal} onChangeText={text => setModal(p => ({ ...p, goal: text }))} keyboardType="numeric" />
               
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.modalButton} onPress={handleAddApp}><Text>add</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.modalButton} onPress={() => setShowAddAppModal(false)}><Text>cancel</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={() => setModal(p => ({ ...p, visible: false }))}><Text>cancel</Text></TouchableOpacity>
               </View>
             </View>
           </View>
@@ -300,7 +286,6 @@ const HomeScreen = () => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: { 
     flex: 1, backgroundColor: '#F8FAFC' 
