@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Add this import
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
@@ -27,6 +28,45 @@ const SettingsScreen = () => {
   const [privacyLevel, setPrivacyLevel] = useState('show');
   const [showNicknameOnly, setShowNicknameOnly] = useState(false);
   const [nickname, setNickname] = useState('');
+
+  // Load settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      const reminder = await AsyncStorage.getItem('reminderInterval');
+      const pomodoro = await AsyncStorage.getItem('pomodoroBreaks');
+      const tips = await AsyncStorage.getItem('motivationalTips');
+      const privacy = await AsyncStorage.getItem('privacyLevel');
+      const nicknameOnly = await AsyncStorage.getItem('showNicknameOnly');
+      const nick = await AsyncStorage.getItem('nickname');
+      if (reminder) setReminderInterval(reminder);
+      if (pomodoro) setPomodoroBreaks(pomodoro === 'true');
+      if (tips) setMotivationalTips(tips === 'true');
+      if (privacy) setPrivacyLevel(privacy);
+      if (nicknameOnly) setShowNicknameOnly(nicknameOnly === 'true');
+      if (nick) setNickname(nick);
+    };
+    loadSettings();
+  }, []);
+
+  // Save settings when they change
+  useEffect(() => {
+    AsyncStorage.setItem('reminderInterval', reminderInterval);
+  }, [reminderInterval]);
+  useEffect(() => {
+    AsyncStorage.setItem('pomodoroBreaks', pomodoroBreaks.toString());
+  }, [pomodoroBreaks]);
+  useEffect(() => {
+    AsyncStorage.setItem('motivationalTips', motivationalTips.toString());
+  }, [motivationalTips]);
+  useEffect(() => {
+    AsyncStorage.setItem('privacyLevel', privacyLevel);
+  }, [privacyLevel]);
+  useEffect(() => {
+    AsyncStorage.setItem('showNicknameOnly', showNicknameOnly.toString());
+  }, [showNicknameOnly]);
+  useEffect(() => {
+    AsyncStorage.setItem('nickname', nickname);
+  }, [nickname]);
 
   const reminderOptions = [
     'every 5 mins',

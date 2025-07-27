@@ -19,6 +19,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import DeviceInfo from 'react-native-device-info';
 import UsageStats from 'react-native-usage-stats';
+import * as Notifications from 'expo-notifications';
 
 const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
@@ -87,7 +88,7 @@ const formatTime = (minutes) => {
   return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [appUsage, setAppUsage] = useState([]);
   const [badges, setBadges] = useState([
     { name: 'first app', earned: false, icon: '📱', description: 'add your first tracked app', color: '#9C27B0' },
@@ -107,6 +108,9 @@ const HomeScreen = () => {
     icon: '📱',
     color: '#69C9FF',
   });
+  const [reminderInterval, setReminderInterval] = useState('never');
+  const [pomodoroBreaks, setPomodoroBreaks] = useState(false);
+  const [pomodoroState, setPomodoroState] = useState({}); // { [appId]: { inBreak: false, lastStart: timestamp } }
 
   const availableIcons = ['📱', '🎵', '📷', '🎮', '💬', '📺', '🛒', '📚', '🏃', '🍔', '🎬', '📧'];
   const availableColors = ['#69C9FF', '#FF6B6B', '#4ECDC4', '#25D366', '#FFD700', '#FF69B4', '#9370DB', '#FF4500'];
@@ -191,19 +195,21 @@ const HomeScreen = () => {
     const progressPercentage = Math.min((app.todayTime / app.dailyGoal) * 100, 100);
     const isOverGoal = app.todayTime > app.dailyGoal;
     return (
-      <View style={styles.appUsageItem}>
-        <View style={styles.appInfo}>
-          <Text style={styles.appIconText}>{app.icon}</Text>
-          <View>
-            <Text style={styles.appName}>{app.name}</Text>
-            <Text style={styles.timeText}>used: {formatTime(app.todayTime)} / {formatTime(app.dailyGoal)}</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('SpecificAppTimeScreen', { app })}>
+        <View style={styles.appUsageItem}>
+          <View style={styles.appInfo}>
+            <Text style={styles.appIconText}>{app.icon}</Text>
+            <View>
+              <Text style={styles.appName}>{app.name}</Text>
+              <Text style={styles.timeText}>used: {formatTime(app.todayTime)} / {formatTime(app.dailyGoal)}</Text>
+            </View>
           </View>
+          <View style={styles.progressBarContainer}>
+            <View style={[styles.progressFill, { width: `${progressPercentage}%`, backgroundColor: isOverGoal ? '#FF5252' : app.color }]} />
+          </View>
+          {isOverGoal && <Text style={styles.overGoalStatus}>goal exceeded!</Text>}
         </View>
-        <View style={styles.progressBarContainer}>
-          <View style={[styles.progressFill, { width: `${progressPercentage}%`, backgroundColor: isOverGoal ? '#FF5252' : app.color }]} />
-        </View>
-        {isOverGoal && <Text style={styles.overGoalStatus}>goal exceeded!</Text>}
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -218,6 +224,101 @@ const HomeScreen = () => {
       </View>
     );
   };
+// notification
+  // Helper to convert interval string to ms 
+  const intervalToMs = (interval) => {
+    switch (interval) {
+      case 'every 5 mins': return 5 * 60 * 1000;
+      case 'every 10 mins': return 10 * 60 * 1000;
+      case 'every 15 mins': return 15 * 60 * 1000;
+      case 'every 30 mins': return 30 * 60 * 1000;
+      case 'every hour': return 60 * 60 * 1000;
+      default: return null;
+    }
+  };
+
+  useEffect(() => {
+    let notificationTimer;
+
+    const scheduleUsageNotification = async () => {
+      for (const app of appUsage) {
+        // Calculate time left (goal - used)
+        const timeLeft = Math.max(0, app.dailyGoal - app.todayTime);
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: `${app.name} usage update`,
+            body: `You have ${timeLeft} min left on ${app.name}!`,
+          },
+          trigger: null, // send immediately
+        });
+      }
+    };
+
+    const startNotificationInterval = () => {
+      if (reminderInterval === 'never') return;
+      const ms = intervalToMs(reminderInterval);
+      if (!ms) return;
+      notificationTimer = setInterval(scheduleUsageNotification, ms);
+    };
+
+    startNotificationInterval();
+
+    return () => {
+      if (notificationTimer) clearInterval(notificationTimer);
+    };
+  }, [reminderInterval, appUsage]);
+
+  useEffect(() => {
+    if (!pomodoroBreaks) return; // Only run if Pomodoro is enabled
+
+    const now = Date.now();
+    let updatedState = { ...pomodoroState };
+
+    appUsage.forEach(app => {
+      // If app is being used
+      if (app.todayTime > 0) {
+        // If not in break, check for 25min streak
+        if (!updatedState[app.id]?.inBreak) {
+          // If lastStart not set, set it
+          if (!updatedState[app.id]?.lastStart) {
+            updatedState[app.id] = { inBreak: false, lastStart: now };
+          } else {
+            // If 25min passed since lastStart, trigger break
+            const usedMinutes = Math.floor((now - updatedState[app.id].lastStart) / (1000 * 60));
+            if (usedMinutes >= 25) {
+              updatedState[app.id] = { inBreak: true, lastStart: now };
+              Notifications.scheduleNotificationAsync({
+                content: {
+                  title: 'Pomodoro break!',
+                  body: `Take a 5min break from ${app.name}!`,
+                },
+                trigger: null,
+              });
+            }
+          }
+        } else {
+          // If in break, check if 5min passed to end break
+          const breakMinutes = Math.floor((now - updatedState[app.id].lastStart) / (1000 * 60));
+          if (breakMinutes >= 5) {
+            updatedState[app.id] = { inBreak: false, lastStart: now };
+            Notifications.scheduleNotificationAsync({
+              content: {
+                title: 'Break over!',
+                body: `You can use ${app.name} again.`,
+              },
+              trigger: null,
+            });
+          }
+        }
+      } else {
+        // Reset if app not used
+        updatedState[app.id] = { inBreak: false, lastStart: null };
+      }
+    });
+
+    setPomodoroState(updatedState);
+  }, [appUsage, pomodoroBreaks]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -231,6 +332,13 @@ const HomeScreen = () => {
             <Ionicons name="add-circle" size={24} color="#fff" />
             <Text style={styles.addAppButtonText}>add new app</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addAppButton}
+            onPress={() => navigation.navigate('BadgesScreen', { badges })}
+          >
+            <Ionicons name="trophy" size={24} color="#fff" />
+            <Text style={styles.addAppButtonText}>view badges</Text>
+          </TouchableOpacity>
         </View>
 
         <FlatList
@@ -243,12 +351,25 @@ const HomeScreen = () => {
         <View style={styles.badgesSection}>
           <Text style={styles.badgesHeader}>🏆 badges</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {badges.map((badge, index) => (
-              <View key={index} style={[styles.badge, { backgroundColor: badge.color, opacity: badge.earned ? 1 : 0.4 }]}>
-                <Text style={styles.badgeIcon}>{badge.icon}</Text>
-                <Text style={styles.badgeName}>{badge.name}</Text>
-              </View>
-            ))}
+            {Array.from({ length: 5 }).map((_, i) => {
+              const badge = badges[i];
+              return (
+                <View
+                  key={i}
+                  style={[
+                    styles.badge,
+                    { backgroundColor: badge?.color || '#ccc', opacity: badge?.earned ? 1 : 0.4 }
+                  ]}
+                >
+                  <Text style={styles.badgeIcon}>
+                    {badge?.earned ? badge.icon : '?'}
+                  </Text>
+                  <Text style={styles.badgeName}>
+                    {badge?.earned ? badge.name : 'locked'}
+                  </Text>
+                </View>
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -428,18 +549,20 @@ const styles = StyleSheet.create({
   input: { 
     borderWidth: 1, 
     borderColor: '#ddd', 
-    
     padding: 10, 
     borderRadius: 5, 
-    marginBottom: 10 },
-  buttonContainer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    marginTop: 10 },
+    marginBottom: 10, 
+    backgroundColor: '#eee' 
+  },
   modalButton: { 
     padding: 15, 
     borderRadius: 5, 
-    backgroundColor: '#eee' },
+    backgroundColor: '#eee' 
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
 });
 
 export default HomeScreen;

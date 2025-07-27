@@ -63,19 +63,27 @@ const useAnnouncementData = () => {
 };
 
 const getImageUrl = (url) => {
-  if (!url) return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
+  if (!url || typeof url !== 'string') return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
+  // If it's a direct image link (ends with .jpg, .png, etc)
+  if (url.match(/\.(jpeg|jpg|gif|png)$/)) return url;
+  // If it's a Google Drive link, convert as before
   if (url.includes('drive.google.com')) {
     let fileId = '';
-    if (url.includes('/open?id=')) fileId = url.split('/open?id=')[1];
-    else if (url.includes('/file/d/')) {
-      const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
-      if (match) fileId = match[1];
-    } else if (url.includes('id=')) {
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (match) fileId = match[1];
+    else if (url.includes('id=')) {
       fileId = url.split('id=')[1].split('&')[0];
     }
-    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    else if (url.includes('/open?id=')) {
+      fileId = url.split('/open?id=')[1];
+    }
+    if (fileId) {
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
   }
-  return url.startsWith('http') ? url : 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
+  // fallback
+  return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
 };
 
 const Header = ({ navigation }) => (

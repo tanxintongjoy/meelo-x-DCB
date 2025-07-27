@@ -13,148 +13,97 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+const API_URL = 'https://api.sheetbest.com/sheets/9ccf6dab-2ca4-4225-913d-aee1735da00a';
+
 const ThemeIdeasScreen = ({ navigation }) => {
   const [currentScreen, setCurrentScreen] = useState('main');
   const [themeIdea, setThemeIdea] = useState('');
   const [themeQuestion, setThemeQuestion] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const API_URL = 'https://api.sheetbest.com/sheets/9ccf6dab-2ca4-4225-913d-aee1735da00a';
-
   const submitToSheet = async (data) => {
     setIsSubmitting(true);
-
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          timestamp: new Date().toISOString(),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
-
       if (response.ok) {
-        Alert.alert('Success', 'Successfully submitted!', [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (data.type === 'theme_idea') {
-                setThemeIdea('');
-              } else if (data.type === 'theme_question') {
-                setThemeQuestion('');
-              }
-            },
-          },
-        ]);
+        Alert.alert('Success', 'Your suggestion has been submitted!');
+        setThemeIdea('');
+        setThemeQuestion('');
       } else {
-        Alert.alert('Error', 'Error submitting. Please try again.');
+        Alert.alert('Error', 'Failed to submit. Please try again.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Network error. Please check your connection.');
-    } finally {
-      setIsSubmitting(false);
+      Alert.alert('Error', 'Network error. Please try again.');
     }
+    setIsSubmitting(false);
   };
 
-  const handleThemeIdeaSubmit = () => {
-    if (themeIdea.trim()) {
-      submitToSheet({
-        type: 'theme_idea',
-        content: themeIdea.trim(),
-        category: 'Theme Ideas',
-      });
-    }
-  };
-
-  const handleThemeQuestionSubmit = () => {
-    if (themeQuestion.trim()) {
-      submitToSheet({
-        type: 'theme_question',
-        content: themeQuestion.trim(),
-        category: 'Theme Questions',
-      });
-    }
-  };
-
-  const MainScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Theme Ideas/Questions</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <Text style={styles.subtitle}>
-          Submit theme ideas or questions anonymously! or vote on campaign themes and features
-        </Text>
-
-        <View style={styles.buttonContainer}>
+  // Main menu
+  if (currentScreen === 'main') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.header}>theme ideas/questions</Text>
+          <Text style={styles.subHeader}>
+            submit theme ideas or questions anonymously! or vote on campaign themes and features
+          </Text>
           <TouchableOpacity
-            style={[styles.actionButton, styles.redButton]}
-            onPress={() => setCurrentScreen('themeIdeas')}
+            style={[styles.bigButton, styles.redButton]}
+            onPress={() => setCurrentScreen('idea')}
           >
-            <Text style={styles.buttonTitle}>Theme ideas</Text>
-            <Text style={styles.buttonSubtitle}>Any ideas which came into mind?</Text>
+            <Text style={styles.buttonTitle}>theme ideas</Text>
+            <Text style={styles.buttonSubtitle}>any ideas which came into mind?</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[styles.actionButton, styles.slateButton]}
-            onPress={() => setCurrentScreen('themeQuestions')}
+            style={[styles.bigButton, styles.blueButton]}
+            onPress={() => setCurrentScreen('question')}
           >
-            <Text style={styles.buttonTitle}>Theme questions</Text>
-            <Text style={styles.buttonSubtitle}>Curious? Feel free to ask!</Text>
+            <Text style={styles.buttonTitle}>theme questions</Text>
+            <Text style={styles.buttonSubtitle}>curious? feel free to ask!</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={[styles.actionButton, styles.grayButton]}
-            onPress={() => setCurrentScreen('voting')}
+            style={[styles.bigButton, styles.brownButton]}
+            onPress={() => {/* voting logic here */}}
           >
-            <Text style={styles.buttonTitle}>Voting</Text>
+            <Text style={styles.buttonTitle}>voting</Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
-  const ThemeIdeasFormScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentScreen('main')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.formContainer}>
-          <Text style={styles.formLabel}>Any ideas which came into mind?</Text>
-
+  // Theme idea screen
+  if (currentScreen === 'idea') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <TouchableOpacity onPress={() => setCurrentScreen('main')} style={styles.backArrow}>
+            <Ionicons name="arrow-back" size={28} color="#333" />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.bigButton, styles.redButton, styles.headerButton]}>
+            <Text style={styles.buttonTitle}>theme ideas</Text>
+            <Text style={styles.buttonSubtitle}>any ideas which came into mind?</Text>
+          </TouchableOpacity>
           <TextInput
-            style={styles.textArea}
+            style={styles.input}
+            placeholder="type your idea here"
             value={themeIdea}
             onChangeText={setThemeIdea}
-            placeholder="Type your idea here"
-            multiline
-            numberOfLines={6}
-            textAlignVertical="top"
-            editable={!isSubmitting}
           />
-
           <TouchableOpacity
-            style={[
-              styles.submitButton,
-              styles.redButton,
-              (!themeIdea.trim() || isSubmitting) && styles.disabledButton,
-            ]}
-            onPress={handleThemeIdeaSubmit}
+            style={styles.submitButton}
+            onPress={() => submitToSheet({
+              type: 'theme_idea',
+              content: themeIdea,
+              category: 'Theme Ideas',
+              timestamp: new Date().toISOString(),
+            })}
             disabled={isSubmitting || !themeIdea.trim()}
           >
             {isSubmitting ? (
@@ -163,44 +112,38 @@ const ThemeIdeasScreen = ({ navigation }) => {
               <Text style={styles.submitButtonText}>Submit Idea</Text>
             )}
           </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
-  const ThemeQuestionsFormScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentScreen('main')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Theme questions</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.formContainer}>
-          <Text style={styles.formLabel}>Curious? Feel free to ask!</Text>
-
+  // Theme question screen
+  if (currentScreen === 'question') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <TouchableOpacity onPress={() => setCurrentScreen('main')} style={styles.backArrow}>
+            <Ionicons name="arrow-back" size={28} color="#333" />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.bigButton, styles.blueButton, styles.headerButton]}>
+            <Text style={styles.buttonTitle}>theme questions</Text>
+            <Text style={styles.buttonSubtitle}>curious? Feel free to ask!</Text>
+          </TouchableOpacity>
           <TextInput
-            style={styles.textArea}
+            style={styles.input}
+            placeholder="type your question here"
             value={themeQuestion}
             onChangeText={setThemeQuestion}
-            placeholder="Type your question here"
-            multiline
-            numberOfLines={6}
-            textAlignVertical="top"
-            editable={!isSubmitting}
           />
-
           <TouchableOpacity
-            style={[
-              styles.submitButton,
-              styles.slateButton,
-              (!themeQuestion.trim() || isSubmitting) && styles.disabledButton,
-            ]}
-            onPress={handleThemeQuestionSubmit}
+            style={styles.submitButton}
+            onPress={() => submitToSheet({
+              type: 'theme_question',
+              content: themeQuestion,
+              category: 'Theme Questions',
+              timestamp: new Date().toISOString(),
+            })}
             disabled={isSubmitting || !themeQuestion.trim()}
           >
             {isSubmitting ? (
@@ -209,145 +152,64 @@ const ThemeIdeasScreen = ({ navigation }) => {
               <Text style={styles.submitButtonText}>Submit Question</Text>
             )}
           </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-
-  const VotingScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentScreen('main')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Voting</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.votingContainer}>
-          <Text style={styles.subtitle}>idk</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-
-  switch (currentScreen) {
-    case 'themeIdeas':
-      return <ThemeIdeasFormScreen />;
-    case 'themeQuestions':
-      return <ThemeQuestionsFormScreen />;
-    case 'voting':
-      return <VotingScreen />;
-    default:
-      return <MainScreen />;
+        </ScrollView>
+      </SafeAreaView>
+    );
   }
+
+  return null;
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    flexDirection: 'row',
+  container: { flex: 1, backgroundColor: '#f3f4f6' },
+  scrollContainer: { padding: 24 },
+  header: { fontSize: 28, fontWeight: '900', marginBottom: 10, color: '#1f2937' },
+  subHeader: { fontSize: 16, color: '#333', marginBottom: 24 },
+  bigButton: {
+    borderRadius: 20,
+    paddingVertical: 22,
+    paddingHorizontal: 12,
+    marginBottom: 24,
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    marginRight: 15,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 30,
-    lineHeight: 24,
-  },
-  buttonContainer: {
-    gap: 20,
-  },
-  actionButton: {
-    padding: 20,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
-  redButton: {
-    backgroundColor: '#E74C3C',
-  },
-  slateButton: {
-    backgroundColor: '#64748B',
-  },
-  grayButton: {
-    backgroundColor: '#6B7280',
-  },
-  buttonTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  buttonSubtitle: {
-    color: '#fff',
-    fontSize: 14,
-    opacity: 0.9,
-  },
-  formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  formLabel: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 15,
+  redButton: { backgroundColor: '#e57373' },
+  blueButton: { backgroundColor: '#7986cb' },
+  brownButton: { backgroundColor: '#8d8072' },
+  buttonTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
+  buttonSubtitle: { fontSize: 15, color: '#fff', marginTop: 4 },
+  headerButton: {
+    marginBottom: 18,
+    marginTop: 0,
+    shadowOpacity: 0,
   },
-  textArea: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 15,
-    fontSize: 16,
-    height: 120,
+  input: {
     backgroundColor: '#fff',
-    marginBottom: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#bbb',
+    padding: 16,
+    fontSize: 16,
+    marginTop: 12,
+    marginBottom: 12,
+    color: '#333',
+  },
+  backArrow: {
+    marginBottom: 18,
+    marginLeft: -8,
   },
   submitButton: {
-    paddingVertical: 15,
+    backgroundColor: '#007AFF',
     borderRadius: 8,
+    padding: 12,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 8,
   },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  disabledButton: {
-    backgroundColor: '#ccc',
-  },
-  votingContainer: {
-    gap: 15,
-  },
+  submitButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
 });
 
 export default ThemeIdeasScreen;

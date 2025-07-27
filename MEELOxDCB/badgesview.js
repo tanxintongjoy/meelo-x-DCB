@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 
+//badge data
 const badgesData = [
-  { id: 1, title: 'dcb badge!', earned: true },
-  { id: 2, title: '???', earned: false },
+  { id: 1, title: 'first app added', earned: true },
+  { id: 2, title: 'complete 50 goals', earned: false },
   { id: 3, title: 'no phone for a day', earned: true },
-  { id: 4, title: 'complete 50 goals', earned: true },
-  { id: 5, title: '???', earned: false },
-  { id: 6, title: 'first on leaderboard', earned: true },
+  { id: 4, title: '7 day streak', earned: false },
+  { id: 5, title: 'first on leaderboard', earned: false },
 ];
 
 export default function BadgesScreen() {
@@ -25,14 +25,11 @@ export default function BadgesScreen() {
               !badge.earned && { opacity: 0.5 },
             ]}
           >
-     // place holder for now
             <View style={styles.placeholderBox}>
               <Text style={styles.placeholderIcon}>
                 {badge.earned ? '🏅' : '?'}
               </Text>
             </View>
-
-   //badge title
             <Text style={styles.badgeText}>{badge.title}</Text>
           </View>
         ))}

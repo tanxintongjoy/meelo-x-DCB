@@ -1,4 +1,5 @@
-import React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -43,8 +44,29 @@ const digitalWellnessHeros = [
   { rank: 3, username: 'jiangkorealuvENGforlife12' },
 ];
 
+const motivationalQuotes = [
+  "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.",
+  "The future belongs to those who believe in the beauty of their dreams.",
+  "It does not matter how slowly you go as long as you do not stop.",
+  "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.",
+  "You are never too old to set another goal or to dream a new dream.",
+  "The only limit to our realization of tomorrow will be our doubts of today.",
+  "Act as if what you do makes a difference. It does.",
+];
+
 export default function LeaderboardScreen() {
   const navigation = useNavigation();
+  const [showTip, setShowTip] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    const loadSetting = async () => {
+      const tips = await AsyncStorage.getItem('motivationalTips');
+      setShowTip(tips === 'true');
+      setQuoteIndex(Math.floor(Math.random() * motivationalQuotes.length));
+    };
+    loadSetting();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -117,10 +139,12 @@ export default function LeaderboardScreen() {
           ))}
         </View>
 
-        <View style={styles.tipBubble}>
-          <Text style={styles.tipLabel}>motivation tip:</Text>
-          <Text style={styles.tipText}>"pibble likes to be a good digital citizen"</Text>
-        </View>
+        {showTip && (
+          <View style={styles.tipBubble}>
+            <Text style={styles.tipLabel}>motivation tip:</Text>
+            <Text style={styles.tipText}>{motivationalQuotes[quoteIndex]}</Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
