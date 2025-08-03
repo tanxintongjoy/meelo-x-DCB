@@ -12,7 +12,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "dcb.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +28,15 @@
       "package": "dcb.app"
     },
     "plugins": [
-      "expo-dev-client"
+      "expo-dev-client",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": false
+          }
+        }
+      ]
     ],
     "web": {
       "favicon": "./assets/favicon.png"
