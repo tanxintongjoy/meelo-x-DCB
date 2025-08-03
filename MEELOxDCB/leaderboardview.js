@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from './asyncStorageFallback';
 import React, { useState, useEffect } from 'react';
 import {
   View,

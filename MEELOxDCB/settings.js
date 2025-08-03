@@ -11,7 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Add this import
+import AsyncStorage from './asyncStorageFallback'; // Use fallback
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     borderColor: '#faebd7',
     borderRadius: scale(24),
     padding: scale(20),
-    shadowColor: '#faebd7',
+    shadowColor: '#66708f',
     shadowOffset: { width: 0, height: scale(3) },
     shadowOpacity: 0.25,
     shadowRadius: scale(4),
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   nicknameInput: {
     backgroundColor: '#f9fafb',
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: '#7b726c',
     borderRadius: scale(12),
     paddingHorizontal: scale(12),
     paddingVertical: scale(10),

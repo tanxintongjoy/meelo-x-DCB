@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -21,11 +20,15 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.QUERY_ALL_PACKAGES"
+        "android.permission.QUERY_ALL_PACKAGES",
+        "android.permission.PACKAGE_USAGE_STATS"
       ],
       "edgeToEdgeEnabled": true,
       "package": "dcb.app"
     },
+    "plugins": [
+      "expo-dev-client"
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     },

@@ -17,9 +17,10 @@ import {
   Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DeviceInfo from 'react-native-device-info';
-import UsageStats from 'react-native-usage-stats';
-import * as Notifications from 'expo-notifications';
+import DeviceInfo from './deviceInfoFallback';
+import UsageStats from './usageStatsFallback';
+import * as Notifications from './notificationsFallback';
+import InstalledApps from './installedAppsFallback';
 
 const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
@@ -101,6 +102,7 @@ const HomeScreen = ({ navigation }) => {
   const [usageStatsPermission, setUsageStatsPermission] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [installedApps, setInstalledApps] = useState({ show: false, data: [] });
+  const [appSearchText, setAppSearchText] = useState('');
   const [modal, setModal] = useState({
     visible: false,
     appName: '',
@@ -117,7 +119,7 @@ const HomeScreen = ({ navigation }) => {
 
   const updateGoalsFromUsage = useCallback((apps) => {
     const hit = apps.filter(app => app.todayTime <= app.dailyGoal).length;
-    setGoalStats({ hit, total: apps.length });
+    setGoalStats({ hit, total: 3 }); // Always show 3 goals instead of apps.length
     if (apps.length > 0 && !badges.find(b => b.name === 'first app').earned) {
       setBadges(prev => prev.map(b => b.name === 'first app' ? { ...b, earned: true } : b));
     }
@@ -155,16 +157,54 @@ const HomeScreen = ({ navigation }) => {
 
   const handleScanApps = async () => {
     setIsScanning(true);
-    const detectedApps = [];
-    for (const app of APP_DATABASE) {
-      if (await checkAppInstalled(app)) {
-        detectedApps.push(app);
-      }
+    
+    // Check if we're using the fallback (Expo Go)
+    if (DeviceInfo._isFallback || InstalledApps._isFallback) {
+      setIsScanning(false);
+      Alert.alert(
+        'Feature Not Available', 
+        'App scanning is not available in Expo Go. This feature requires a development build or production app to access device information.',
+        [
+          { text: 'OK', style: 'default' },
+          { text: 'Add Apps Manually', onPress: () => setModal({ ...modal, visible: true }) }
+        ]
+      );
+      return;
     }
-    setInstalledApps({ show: true, data: detectedApps });
-    setIsScanning(false);
-    if (detectedApps.length === 0) {
-      Alert.alert('no apps found', 'we couldn\'t detect any of the common apps on your device.');
+    
+    try {
+      // Get ALL installed apps on the device
+      const allApps = await InstalledApps.getNonSystemApps();
+      
+      // Filter out system apps and format the data
+      const userApps = allApps
+        .filter(app => 
+          app.packageName && 
+          app.appName && 
+          !app.packageName.startsWith('com.android.') &&
+          !app.packageName.startsWith('com.google.android.') &&
+          app.packageName !== 'android'
+        )
+        .map(app => ({
+          name: app.appName,
+          packageName: app.packageName,
+          icon: app.icon || '📱', // Use app icon if available, otherwise default
+          category: 'User App'
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+      
+      setInstalledApps({ show: true, data: userApps });
+      setIsScanning(false);
+      
+      if (userApps.length === 0) {
+        Alert.alert('No Apps Found', 'Could not detect any user apps on your device.');
+      } else {
+        Alert.alert('Apps Found', `Found ${userApps.length} apps on your device! Select the ones you want to track.`);
+      }
+    } catch (error) {
+      console.error('Error scanning apps:', error);
+      setIsScanning(false);
+      Alert.alert('Scan Failed', 'Failed to scan for apps. Please try adding apps manually.');
     }
   };
 
@@ -184,6 +224,8 @@ const HomeScreen = ({ navigation }) => {
     };
     setAppUsage(prev => [...prev, newApp]);
     setModal({ visible: false, appName: '', goal: '60', icon: '📱', color: '#69C9FF' });
+    setInstalledApps({ show: false, data: [] });
+    setAppSearchText('');
   };
 
   const selectInstalledApp = (app) => {
@@ -323,87 +365,109 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView>
-        <PermissionPrompt />
-        <View style={styles.mainCard}>
-          <Text style={styles.cardTitle}>daily summaries:</Text>
-          <Text style={styles.goalProgressText}>you've hit {goalStats.hit}/{goalStats.total} goals today!</Text>
-          <TouchableOpacity style={styles.addAppButton} onPress={() => setModal(prev => ({ ...prev, visible: true }))}>
-            <Ionicons name="add-circle" size={24} color="#fff" />
-            <Text style={styles.addAppButtonText}>add new app</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.addAppButton}
-            onPress={() => navigation.navigate('BadgesScreen', { badges })}
-          >
-            <Ionicons name="trophy" size={24} color="#fff" />
-            <Text style={styles.addAppButtonText}>view badges</Text>
-          </TouchableOpacity>
-        </View>
-
-        <FlatList
-          data={appUsage}
-          renderItem={({ item }) => <AppUsageItem app={item} />}
-          keyExtractor={item => item.id.toString()}
-          ListEmptyComponent={<Text style={styles.emptyListText}>no apps tracked yet. add one!</Text>}
-        />
-
-        <View style={styles.badgesSection}>
-          <Text style={styles.badgesHeader}>🏆 badges</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {Array.from({ length: 5 }).map((_, i) => {
-              const badge = badges[i];
-              return (
-                <View
-                  key={i}
-                  style={[
-                    styles.badge,
-                    { backgroundColor: badge?.color || '#ccc', opacity: badge?.earned ? 1 : 0.4 }
-                  ]}
-                >
-                  <Text style={styles.badgeIcon}>
-                    {badge?.earned ? badge.icon : '?'}
-                  </Text>
-                  <Text style={styles.badgeName}>
-                    {badge?.earned ? badge.name : 'locked'}
-                  </Text>
-                </View>
-              );
-            })}
-          </ScrollView>
-        </View>
-
-        <Modal visible={modal.visible} animationType="slide" transparent={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>add new app</Text>
-              <TouchableOpacity style={styles.scanButton} onPress={handleScanApps}>
-                <Text style={styles.scanButtonText}>{isScanning ? 'scanning...' : 'scan device for apps'}</Text>
+      <FlatList
+        data={appUsage}
+        renderItem={({ item }) => <AppUsageItem app={item} />}
+        keyExtractor={item => item.id.toString()}
+        ListEmptyComponent={<Text style={styles.emptyListText}>no apps tracked yet. add one!</Text>}
+        ListHeaderComponent={
+          <>
+            <PermissionPrompt />
+            <View style={styles.mainCard}>
+              <Text style={styles.cardTitle}>daily summaries:</Text>
+              <Text style={styles.goalProgressText}>you've hit {goalStats.hit}/{goalStats.total} goals today!</Text>
+              <TouchableOpacity style={styles.addAppButton} onPress={() => setModal(prev => ({ ...prev, visible: true }))}>
+                <Ionicons name="add-circle" size={24} color="#fff" />
+                <Text style={styles.addAppButtonText}>add new app</Text>
               </TouchableOpacity>
-              
-              {installedApps.show && (
+              <TouchableOpacity
+                style={styles.addAppButton}
+                onPress={() => navigation.navigate('Badges', { badges })}
+              >
+                <Ionicons name="trophy" size={24} color="#fff" />
+                <Text style={styles.addAppButtonText}>view badges</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        ListFooterComponent={
+          <View style={styles.badgesSection}>
+            <Text style={styles.badgesHeader}>🏆 badges</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {Array.from({ length: 5 }).map((_, i) => {
+                const badge = badges[i];
+                return (
+                  <View
+                    key={i}
+                    style={[
+                      styles.badge,
+                      { backgroundColor: badge?.color || '#ccc', opacity: badge?.earned ? 1 : 0.4 }
+                    ]}
+                  >
+                    <Text style={styles.badgeIcon}>
+                      {badge?.earned ? badge.icon : '?'}
+                    </Text>
+                    <Text style={styles.badgeName}>
+                      {badge?.earned ? badge.name : 'locked'}
+                    </Text>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        }
+      />
+
+      <Modal visible={modal.visible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>add new app</Text>
+            <TouchableOpacity style={styles.scanButton} onPress={handleScanApps}>
+              <Text style={styles.scanButtonText}>{isScanning ? 'scanning all apps...' : 'scan all apps on device'}</Text>
+            </TouchableOpacity>
+            
+            {installedApps.show && (
+              <>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search apps..."
+                  value={appSearchText}
+                  onChangeText={setAppSearchText}
+                  placeholderTextColor="#999"
+                />
                 <FlatList
-                  data={installedApps.data}
+                  data={installedApps.data.filter(app => 
+                    app.name.toLowerCase().includes(appSearchText.toLowerCase()) ||
+                    app.packageName.toLowerCase().includes(appSearchText.toLowerCase())
+                  )}
                   renderItem={({ item }) => (
                     <TouchableOpacity style={styles.installedAppItem} onPress={() => selectInstalledApp(item)}>
-                      <Text>{item.icon} {item.name}</Text>
+                      <Text style={styles.appItemText}>{item.icon} {item.name}</Text>
+                      <Text style={styles.packageNameText}>{item.packageName}</Text>
                     </TouchableOpacity>
                   )}
                   keyExtractor={item => item.packageName}
+                  style={styles.modalFlatList}
+                  nestedScrollEnabled={true}
+                  showsVerticalScrollIndicator={true}
                 />
-              )}
+              </>
+            )}
 
-              <TextInput style={styles.input} placeholder="app name" value={modal.appName} onChangeText={text => setModal(p => ({ ...p, appName: text }))} />
-              <TextInput style={styles.input} placeholder="daily goal (minutes)" value={modal.goal} onChangeText={text => setModal(p => ({ ...p, goal: text }))} keyboardType="numeric" />
-              
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.modalButton} onPress={handleAddApp}><Text>add</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.modalButton} onPress={() => setModal(p => ({ ...p, visible: false }))}><Text>cancel</Text></TouchableOpacity>
-              </View>
+            <TextInput style={styles.input} placeholder="app name" value={modal.appName} onChangeText={text => setModal(p => ({ ...p, appName: text }))} />
+            <TextInput style={styles.input} placeholder="daily goal (minutes)" value={modal.goal} onChangeText={text => setModal(p => ({ ...p, goal: text }))} keyboardType="numeric" />
+            
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleAddApp}><Text>add</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => {
+                setModal(p => ({ ...p, visible: false }));
+                setInstalledApps({ show: false, data: [] });
+                setAppSearchText('');
+              }}><Text>cancel</Text></TouchableOpacity>
             </View>
           </View>
-        </Modal>
-      </ScrollView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -562,6 +626,29 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+  },
+  modalFlatList: {
+    maxHeight: 200,
+    marginVertical: 10,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: '#f8f8f8',
+    fontSize: 16,
+  },
+  appItemText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+  },
+  packageNameText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
   },
 });
 

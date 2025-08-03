@@ -24,6 +24,7 @@ import HomeScreen from './realHome.js';
 import ThemeIdeasScreen from './suggestionview.js';
 import DetailedInfo from './detailedview.js';
 import BadgesScreen from './badgesview.js';
+import SpecificAppTimeScreen from './specificapptime.js';
 
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -239,6 +240,7 @@ export default function App() {
         <Stack.Screen name="ThemeIdeas" component={ThemeIdeasScreen} />
         <Stack.Screen name="DetailedInfo" component={DetailedInfo} />
         <Stack.Screen name="Badges" component={BadgesScreen} />
+        <Stack.Screen name="SpecificAppTimeScreen" component={SpecificAppTimeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
