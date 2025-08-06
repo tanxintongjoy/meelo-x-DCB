@@ -112,14 +112,14 @@ const HomeScreen = ({ navigation }) => {
   });
   const [reminderInterval, setReminderInterval] = useState('never');
   const [pomodoroBreaks, setPomodoroBreaks] = useState(false);
-  const [pomodoroState, setPomodoroState] = useState({}); // { [appId]: { inBreak: false, lastStart: timestamp } }
+  const [pomodoroState, setPomodoroState] = useState({}); 
 
   const availableIcons = ['📱', '🎵', '📷', '🎮', '💬', '📺', '🛒', '📚', '🏃', '🍔', '🎬', '📧'];
   const availableColors = ['#69C9FF', '#FF6B6B', '#4ECDC4', '#25D366', '#FFD700', '#FF69B4', '#9370DB', '#FF4500'];
 
   const updateGoalsFromUsage = useCallback((apps) => {
     const hit = apps.filter(app => app.todayTime <= app.dailyGoal).length;
-    setGoalStats({ hit, total: 3 }); // Always show 3 goals instead of apps.length
+    setGoalStats({ hit, total: 3 }); 
     if (apps.length > 0 && !badges.find(b => b.name === 'first app').earned) {
       setBadges(prev => prev.map(b => b.name === 'first app' ? { ...b, earned: true } : b));
     }
@@ -158,7 +158,7 @@ const HomeScreen = ({ navigation }) => {
   const handleScanApps = async () => {
     setIsScanning(true);
     
-    // Check if we're using the fallback (Expo Go)
+    
     if (DeviceInfo._isFallback || InstalledApps._isFallback) {
       setIsScanning(false);
       Alert.alert(
@@ -173,10 +173,10 @@ const HomeScreen = ({ navigation }) => {
     }
     
     try {
-      // Get ALL installed apps on the device
+      
       const allApps = await InstalledApps.getNonSystemApps();
       
-      // Filter out system apps and format the data
+      
       const userApps = allApps
         .filter(app => 
           app.packageName && 
@@ -266,8 +266,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   };
-// notification
-  // Helper to convert interval string to ms 
+
   const intervalToMs = (interval) => {
     switch (interval) {
       case 'every 5 mins': return 5 * 60 * 1000;
@@ -284,7 +283,7 @@ const HomeScreen = ({ navigation }) => {
 
     const scheduleUsageNotification = async () => {
       for (const app of appUsage) {
-        // Calculate time left (goal - used)
+        
         const timeLeft = Math.max(0, app.dailyGoal - app.todayTime);
 
         await Notifications.scheduleNotificationAsync({
@@ -292,7 +291,7 @@ const HomeScreen = ({ navigation }) => {
             title: `${app.name} usage update`,
             body: `You have ${timeLeft} min left on ${app.name}!`,
           },
-          trigger: null, // send immediately
+          trigger: null, 
         });
       }
     };
@@ -312,21 +311,21 @@ const HomeScreen = ({ navigation }) => {
   }, [reminderInterval, appUsage]);
 
   useEffect(() => {
-    if (!pomodoroBreaks) return; // Only run if Pomodoro is enabled
+    if (!pomodoroBreaks) return; 
 
     const now = Date.now();
     let updatedState = { ...pomodoroState };
 
     appUsage.forEach(app => {
-      // If app is being used
+     
       if (app.todayTime > 0) {
-        // If not in break, check for 25min streak
+        
         if (!updatedState[app.id]?.inBreak) {
-          // If lastStart not set, set it
+          
           if (!updatedState[app.id]?.lastStart) {
             updatedState[app.id] = { inBreak: false, lastStart: now };
           } else {
-            // If 25min passed since lastStart, trigger break
+            
             const usedMinutes = Math.floor((now - updatedState[app.id].lastStart) / (1000 * 60));
             if (usedMinutes >= 25) {
               updatedState[app.id] = { inBreak: true, lastStart: now };
@@ -340,7 +339,7 @@ const HomeScreen = ({ navigation }) => {
             }
           }
         } else {
-          // If in break, check if 5min passed to end break
+         
           const breakMinutes = Math.floor((now - updatedState[app.id].lastStart) / (1000 * 60));
           if (breakMinutes >= 5) {
             updatedState[app.id] = { inBreak: false, lastStart: now };
@@ -354,7 +353,7 @@ const HomeScreen = ({ navigation }) => {
           }
         }
       } else {
-        // Reset if app not used
+       
         updatedState[app.id] = { inBreak: false, lastStart: null };
       }
     });

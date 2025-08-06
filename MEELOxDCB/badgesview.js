@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 
-//badge data
+
 const badgesData = [
   { id: 1, title: 'first app added', earned: true },
   { id: 2, title: 'complete 50 goals', earned: false },

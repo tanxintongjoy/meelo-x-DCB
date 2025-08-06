@@ -11,7 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import AsyncStorage from './asyncStorageFallback'; // Use fallback
+import AsyncStorage from './asyncStorageFallback';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
@@ -29,7 +29,7 @@ const SettingsScreen = () => {
   const [showNicknameOnly, setShowNicknameOnly] = useState(false);
   const [nickname, setNickname] = useState('');
 
-  // Load settings on mount
+
   useEffect(() => {
     const loadSettings = async () => {
       const reminder = await AsyncStorage.getItem('reminderInterval');
@@ -48,7 +48,7 @@ const SettingsScreen = () => {
     loadSettings();
   }, []);
 
-  // Save settings when they change
+
   useEffect(() => {
     AsyncStorage.setItem('reminderInterval', reminderInterval);
   }, [reminderInterval]);

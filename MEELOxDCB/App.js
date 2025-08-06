@@ -65,9 +65,9 @@ const useAnnouncementData = () => {
 
 const getImageUrl = (url) => {
   if (!url || typeof url !== 'string') return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
-  // If it's a direct image link (ends with .jpg, .png, etc)
+ 
   if (url.match(/\.(jpeg|jpg|gif|png)$/)) return url;
-  // If it's a Google Drive link, convert as before
+  
   if (url.includes('drive.google.com')) {
     let fileId = '';
     const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
@@ -83,7 +83,7 @@ const getImageUrl = (url) => {
     }
     return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
   }
-  // fallback
+
   return 'https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=No+Image';
 };
 

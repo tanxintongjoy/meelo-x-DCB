@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 
 export default function SpecificAppTimeScreen({ route }) {
-  // Use app data from navigation params
+  
   const app = route?.params?.app;
 
   if (!app) {

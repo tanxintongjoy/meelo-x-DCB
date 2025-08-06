@@ -42,7 +42,7 @@ const ThemeIdeasScreen = ({ navigation }) => {
     setIsSubmitting(false);
   };
 
-  // Main menu
+
   if (currentScreen === 'main') {
     return (
       <SafeAreaView style={styles.container}>
@@ -77,7 +77,7 @@ const ThemeIdeasScreen = ({ navigation }) => {
     );
   }
 
-  // Theme idea screen
+
   if (currentScreen === 'idea') {
     return (
       <SafeAreaView style={styles.container}>
@@ -117,7 +117,7 @@ const ThemeIdeasScreen = ({ navigation }) => {
     );
   }
 
-  // Theme question screen
+
   if (currentScreen === 'question') {
     return (
       <SafeAreaView style={styles.container}>
