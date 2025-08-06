@@ -188,10 +188,10 @@ const HomeScreen = ({ navigation }) => {
         .map(app => ({
           name: app.appName,
           packageName: app.packageName,
-          icon: app.icon || '📱', // Use app icon if available, otherwise default
+          icon: app.icon || '📱', 
           category: 'User App'
         }))
-        .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+        .sort((a, b) => a.name.localeCompare(b.name)); 
       
       setInstalledApps({ show: true, data: userApps });
       setIsScanning(false);
